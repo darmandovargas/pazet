@@ -1,0 +1,6 @@
+Django==1.11.7
+django-redis==4.8.0
+psycopg2==2.7.3.2
+pytz==2017.3
+redis==2.10.6
+unicodecsv==0.14.1

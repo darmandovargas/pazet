@@ -1,0 +1,108 @@
+html, body {
+   height: 100%;
+}
+
+body{
+  background: url('/public/images/fondo.png') no-repeat center center fixed !important;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+
+
+
+
+/*#container-mapa{
+  margin-top: 55px;
+  *//*overflow: hidden;*//*
+}*/
+
+
+/* ESTILO PARA NO SOLAPAR LAS VISTAS CON EL MENU SUPERIOR*/
+.margintop{
+  margin-top: 70px !Important;
+}
+
+
+
+
+
+
+/*#map {
+  width: auto;
+  min-height: 500px;
+  position: relative;
+}*/
+
+#tablaTransparente {
+    color: white;
+    width: 100%;
+    background-color: #D8F0DA;
+    border: 1px;
+    min-width: 100%;
+    position: relative;
+    opacity: 0.97;
+    background: transparent;
+}
+.table_title{
+   font-weight: 600;
+}
+
+/*ESTOS ESTILOS SON UTILIZADOS EN LA PAGINA PRINCIPAL DEL SISTEMA*/
+@font-face {
+    font-family: 'BAUHS93';
+    /* Antes de descargar el archivo, le decimos al buscador
+    que intente buscar en local la fuente con nombre
+    Cabin, Cabin Regular o Cabin-Regular */
+    src: local('BAUHS93'),
+    url(/public/fonts/BAUHS93/BAUHS93.woff) format('woff');
+}
+
+.stilepaz{
+    font-family: 'BAUHS93';
+    font-weight:bold;
+    font-size:30px;
+    line-height: 1em;
+    color: #0B4600;
+    text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+}
+.spazet{
+    font-family: 'BAUHS93';
+    font-weight:bold;
+    font-size:60px;
+    color: white;
+    text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+    -webkit-text-stroke: 3px #0B4600;
+    /*text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;*/
+    /*text-align: right;*/
+    vertical-align: middle;
+    text-align: center;
+    margin-top:20px;
+    text-shadow: 0px 0px 10px #0B4600;
+}
+/******************************************************************/
+
+
+/*input[type=text] {
+    text-transform: uppercase;
+}*/
+.upper { text-transform: uppercase; }
+
+
+
+/*#loader{
+  position: fixed;
+  z-index: 100000 !important;
+  background-image: url("/public/images/fondo.png");
+}*/
+
+
+/*ESTO ES PARA EL MENSAJE DE CONFIRMACION*/
+/*
+.jconfirm-box{
+   left: 35% !important;
+   width: 500px !important;
+   vertical-align: middle;
+}*/

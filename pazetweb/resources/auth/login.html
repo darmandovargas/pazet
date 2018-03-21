@@ -1,0 +1,100 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="es" data-ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>PAZ - ET</title>
+
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon"/>
+    <link rel="stylesheet" href="{% static 'bower_components/semantic/dist/semantic.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bower_components/hover/css/hover.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/style_login.css' %}"/>
+
+</head>
+<body>
+
+<div class="ui one column center aligned grid" style="margin-top:10%;">
+    <div class="column nine wide form-holder hvr-grow-shadow">
+        <h2 class="center aligned header form-head">
+            <div class="login_title">
+                PLATAFORMA AGROCLIMÁTICA DE ZONIFICACIÓN <br> ESPACIO TEMPORAL
+            </div>
+        </h2>
+        <h2 class="stilepaz">PAZ - ET</h2>
+
+    </div>
+</div>
+
+<div class="ui one column center aligned grid" style="margin-top:30px;">
+    <div class="column four wide fondo_login">
+
+
+        {% if form.errors %}
+        <div class="ui negative message">
+            <i class="close icon"></i>
+            <div class="header">
+                OOPS!
+            </div>
+            <p>Su usuario y contraseña no coinciden. Por favor, inténtelo de nuevo</p>
+        </div>
+        {% endif %}
+
+        {% if next %}
+        {% if user.is_authenticated %}
+
+        <div class="ui warning message">
+            <i class="close icon"></i>
+            <div class="header">
+                OOPS!
+            </div>
+           <p>Su cuenta no tiene acceso a esta página. Para proceder, Inicie sesión con una cuenta que tenga acceso.</p>
+        </div>
+
+        {% else %}
+
+        <div class="ui warning message">
+            <i class="close icon"></i>
+            <div class="header">
+                OOPS! Sesión Terminada?
+            </div>
+           <p>Inicie sesión nuevamente para ingresar al sitio</p>
+        </div>
+
+        {% endif %}
+        {% endif %}
+
+        <form action="{% url 'auth:login' %}" method="POST">{% csrf_token %}
+            <div class="ui form">
+                <div class="field">
+                    <input type="text" name="username" placeholder="usuario" required>
+                </div>
+                <div class="field">
+                    <input type="password" name="password" placeholder="contraseña" required>
+                </div>
+                <div class="field">
+                    <input type="submit" value="Acceder" class="ui button large fluid green">
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                </div>
+            </div>
+        </form>
+
+        <div class="ui message">
+            <i class="close icon"></i>
+            <p>El uso de este sitio web implica la aceptación de los Términos y condiciones de © Corpoica.</p>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script type="text/javascript" src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/semantic/dist/semantic.min.js' %}"></script>
+
+<script>
+    $('.ui.checkbox').checkbox();
+    $('.message .close').on('click', function() { $(this).closest('.message').transition('swing down'); });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+{% extends "layouts/layout_dashboard.html" %}
+{% load staticfiles %}
+
+
+{% block css %}
+
+{% endblock css %}
+
+
+{% block contenido %}
+
+<div class="ui container margintop">
+
+    <div class="ui segment">
+
+
+        <h2 class="ui header dividing">
+            <img src="{% static 'images/dashboard/agua/agua_title.png' %}" class="ui image">
+            <div class="content">
+                Agua
+                <div class="sub header">
+                    <i>Información agua</i>
+                </div>
+            </div>
+        </h2>
+
+
+        <div class="ui clearing divider"></div>
+
+
+        <div class="ui link three cards">
+
+            <a href="{% url 'agua:caudal_day' %}" class="card">
+                <div class="image">
+                    <img src="{% static 'images/dashboard/agua/base_caudal.png' %}">
+                </div>
+                <div class="content">
+                    <div class="header">Base diaria caudales</div>
+
+                    <div class="description">
+                        Información de caudales diarios reportados por estaciones georeferenciadas.
+                    </div>
+                </div>
+            </a>
+
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock contenido %}
+
+
+{% block script %}
+
+{% endblock script %}

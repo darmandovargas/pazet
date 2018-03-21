@@ -1,0 +1,81 @@
+{% extends "layouts/layout_dashboard.html" %}
+{% load staticfiles %}
+
+
+{% block css %}
+
+{% endblock css %}
+
+
+{% block contenido %}
+
+<div class="ui container margintop">
+
+    <div class="ui segment">
+
+
+        <h2 class="ui header dividing">
+            <img src="{% static 'images/dashboard/clima/clima_tittle.png' %}" class="ui image">
+            <div class="content">
+                Clima
+                <div class="sub header">
+                    <i>Información climatica</i>
+                </div>
+            </div>
+        </h2>
+
+
+        <div class="ui clearing divider"></div>
+
+
+        <div class="ui link three cards">
+
+            <a href="{% url 'clima:clima_month' %}" class="card">
+                <div class="image">
+                    <img src="{% static 'images/base_mensual.png' %}">
+                </div>
+                <div class="content">
+                    <div class="header">Base mensual</div>
+
+                    <div class="description">
+                        Información climatica mensual reportada por estaciones georeferenciadas.
+                    </div>
+                </div>
+            </a>
+
+            <a href="{% url 'clima:clima_day' %}" class="card">
+                <div class="image">
+                    <img src="{% static 'images/base_mensual.png' %}">
+                </div>
+                <div class="content">
+                    <div class="header">Base diaria</div>
+                    <div class="description">
+                        Información climatica diaria reportada por estaciones georeferenciadas.
+                    </div>
+                </div>
+            </a>
+
+            <a href="{% url 'clima:dioxdc' %}" class="card">
+                <div class="image">
+                    <img src="{% static 'images/base_co2.png' %}">
+                </div>
+                <div class="content">
+                    <div class="header"> Emisiones de CO<sub>2</sub></div>
+                    <div class="description">
+                        Visualice y descargue información de dióxido de carbono recavada a travez de los años.
+                    </div>
+                </div>
+            </a>
+
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock contenido %}
+
+
+{% block script %}
+
+{% endblock script %}

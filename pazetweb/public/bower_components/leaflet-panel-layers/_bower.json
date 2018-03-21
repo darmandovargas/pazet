@@ -1,0 +1,29 @@
+{
+  "name": "leaflet-panel-layers",
+  "version": "0.5.2",
+  "description": "Leaflet Control Layers extended for group of layers and icons legend",
+  "main": [
+    "dist/leaflet-panel-layers.min.css",
+    "dist/leaflet-panel-layers.min.js"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components",
+    "images",
+    "src",
+    "bower_components",
+    "examples"
+  ],
+  "homepage": "https://github.com/stefanocudini/leaflet-panel-layers",
+  "_release": "0.5.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.5.2",
+    "commit": "b8787764eddcd1e70308b80f341e6858e73a26b2"
+  },
+  "_source": "https://github.com/stefanocudini/leaflet-panel-layers.git",
+  "_target": "0.5.2",
+  "_originalSource": "leaflet-panel-layers",
+  "_direct": true
+}

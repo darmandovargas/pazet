@@ -1,0 +1,167 @@
+{% extends "layouts/layout_dashboard.html" %}
+{% load staticfiles %}
+
+
+{% block css %}
+
+{% endblock css %}
+
+
+{% block contenido %}
+
+<div class="ui container margintop">
+
+
+    <div class="ui very padded piled segment">
+        <div class="ui grid">
+
+            <div class="twelve wide column">
+                <div class="stilepaz">PLATAFORMA AGROCLIMATICA DE ZONIFICACIÓN <br> ESPACIO TEMPORAL</div>
+            </div>
+
+            <div class="four wide column">
+                <div class="spazet">PAZ - ET</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="ui special four cards">
+
+
+        <a class="card" href="{% url 'dashboard:mapainteractivo' %}">
+            <div class="blurring dimmable image">
+                <div class="ui dimmer">
+                    <div class="content">
+                        <div class="center">
+                            <div class="ui inverted button">Entrar</div>
+                        </div>
+                    </div>
+                </div>
+                <img src="{% static 'images/dashboard/home/icono_mapa.png' %}" class="ui small image">
+            </div>
+            <div class="content">
+                <h5>
+                    <i class="circular grey external icon"></i> Mapa Interactivo ::::
+                </h5>
+            </div>
+        </a>
+
+        <a class="card" href="{% url 'clima:index' %}">
+            <div class="blurring dimmable image">
+                <div class="ui dimmer">
+                    <div class="content">
+                        <div class="center">
+                            <div class="ui inverted button">Entrar</div>
+                        </div>
+                    </div>
+                </div>
+                <img src="{% static 'images/dashboard/home/icono_clima.png' %}" class="ui small image">
+            </div>
+            <div class="content">
+                <h5>
+                    <i class="circular grey external icon"></i> Clima ::::
+                </h5>
+            </div>
+        </a>
+
+        <a class="card" href="{% url 'agua:index' %}">
+            <div class="blurring dimmable image">
+                <div class="ui dimmer">
+                    <div class="content">
+                        <div class="center">
+                            <div class="ui inverted button">Entrar</div>
+                        </div>
+                    </div>
+                </div>
+                <img src="{% static 'images/dashboard/home/icono_agua.png' %}" class="ui small image">
+            </div>
+            <div class="content">
+                <h5>
+                    <i class="circular grey external icon"></i> Agua ::::
+                </h5>
+            </div>
+        </a>
+
+        <a class="card" href="{% url 'suelo:index' %}">
+            <div class="blurring dimmable image">
+                <div class="ui dimmer">
+                    <div class="content">
+                        <div class="center">
+                            <div class="ui inverted button">Entrar</div>
+                        </div>
+                    </div>
+                </div>
+                <img src="{% static 'images/dashboard/home/icono_suelo.png' %}" class="ui small image">
+            </div>
+            <div class="content">
+                <h5>
+                    <i class="circular grey external icon"></i> Suelo ::::
+                </h5>
+            </div>
+        </a>
+
+        <a class="card" href="#">
+            <div class="blurring dimmable image">
+                <div class="ui dimmer">
+                    <div class="content">
+                        <div class="center">
+                            <div class="ui inverted button">Entrar</div>
+                        </div>
+                    </div>
+                </div>
+                <img src="{% static 'images/dashboard/home/icono_cultivo.png' %}" class="ui small image">
+            </div>
+            <div class="content">
+                <h5>
+                    <i class="circular grey external icon"></i> Agricultura ::::
+                </h5>
+            </div>
+        </a>
+
+        <a class="card" href="#">
+            <div class="blurring dimmable image">
+                <div class="ui dimmer">
+                    <div class="content">
+                        <div class="center">
+                            <div class="ui inverted button">Entrar</div>
+                        </div>
+                    </div>
+                </div>
+                <img src="{% static 'images/dashboard/home/icono_socioeconomia.png' %}" class="ui small image">
+            </div>
+            <div class="content">
+                <h5>
+                    <i class="circular grey external icon"></i> Socioeconomía ::::
+                </h5>
+            </div>
+        </a>
+
+
+
+    </div>
+
+    <div class="ui grid">
+        <div class="sixteen wide column">
+            <div class="ui inverted segment">
+                <!-- <p></p>
+                 <div class="ui inverted divider"></div>
+                 <p></p>-->
+                <h4 class="ui horizontal inverted divider">
+                    <a href="http://www.corpoica.org.co/" target="_blank">www.corpoica.org.co</a>
+                </h4>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock contenido %}
+
+
+{% block script %}
+<script>
+    $('.special.cards .image').dimmer({ on: 'hover' });
+</script>
+{% endblock script %}

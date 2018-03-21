@@ -1,0 +1,414 @@
+{% extends "layouts/layout_dashboard.html" %}
+{% load staticfiles %}
+
+
+{% block css %}
+
+<link rel="stylesheet" href="{% static 'bower_components/leaflet/dist/leaflet.css' %}"/>
+<link rel="stylesheet" href="{% static 'plugins/Leaflet_draw/leaflet-draw/dist/leaflet.draw.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/Leaflet.label/dist/leaflet.label.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet-search/src/leaflet-search.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet-loader/leaflet-loader.css' %}"/>
+
+{% endblock css %}
+
+
+{% block menu %}
+<a href="{% url 'clima:index' %}" class="item">
+    <div data-inverted="" data-tooltip="Inicio" data-position="bottom left">
+        <i class="fa fa-thermometer-empty" aria-hidden="true"></i> Clima
+    </div>
+</a>
+{% endblock %}
+
+
+{% block contenido %}
+
+<div class="ui container margintop" ng-controller="ClimaMonthController">
+
+    <div class="ui segment">
+
+        <h2 class="ui header dividing">
+            <img src="{% static 'images/dashboard/clima/clima_tittle.png' %}" class="ui image">
+            <div class="content">
+                Clima (Base mensual)
+                <div class="sub header">
+                    <i>Descargue información climatica mensual de las estaciones georreferenciadas</i>
+                </div>
+            </div>
+        </h2>
+
+    </div>
+
+    <div class="ui divider"></div>
+
+
+    <!--*************************************************************************************************************-->
+    <!--********************************************* SEGMENT DE CONSULTA *******************************************-->
+    <!--*************************************************************************************************************-->
+    <div class="ui segment olive" id="filter">
+
+        <div class="ui pointing secondary menu">
+            <a class="item active" data-tab="tab_poligono">Polígono</a>
+            <a class="item" data-tab="tab_ubicacion">Departamento / Municipio</a>
+            <a class="item" data-tab="tab_nom_codigo">Nombre / Codigo</a>
+        </div>
+
+        <div class="ui tab active" data-tab="tab_poligono">
+            <div id="mapa_month" style="width: 100%;height: 400px;"></div>
+        </div>
+
+        <div class="ui tab" data-tab="tab_ubicacion">
+
+            <h4 class="ui header dividing">
+                <i class="search icon"></i>
+                <div class="content">
+                    Filtro por Departamento - Municipio
+                </div>
+            </h4>
+
+            <div class="ui form">
+                <div class="ui grid">
+
+                    <div class="five wide column">
+
+                        <div class="ui labeled input">
+                            <div class="ui label">Departamento:</div>
+                            <select class="ui search selection convert-to-number" id="departamento_id"
+                                    ng-model="departamento_id">
+                                <option value="" selected="" disabled="">Digite...</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="two wide column">
+
+                        <button class="ui animated fade blue fluid medium button" ng-click="searchWithDepto()">
+                            <div class="visible content">Consultar</div>
+                            <div class="hidden content">
+                                <i class="search icon"></i>
+                            </div>
+                        </button>
+
+                    </div>
+
+                    <div class="two wide column">
+                        <div class="ui vertical divider">Ó</div>
+                    </div>
+
+                    <div class="five wide column">
+
+                        <div class="field">
+
+                            <div class="ui labeled input">
+                                <div class="ui label">Municipio:</div>
+                                <select class="ui search selection" id="municipio_id" ng-model="municipio_id">
+                                    <option value="" selected="" disabled="">Digite...</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="two wide column">
+
+                        <button class="ui animated fade blue fluid medium button" ng-click="searchWithMun()">
+                            <div class="visible content">Consultar</div>
+                            <div class="hidden content">
+                                <i class="search icon"></i>
+                            </div>
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="ui tab" data-tab="tab_nom_codigo">
+
+            <h4 class="ui header dividing">
+                <i class="search icon"></i>
+                <div class="content">
+                    Filtro por Estación (Codigo / Nombre)
+                </div>
+            </h4>
+
+            <div class="ui form">
+                <div class="ui grid">
+
+                    <div class="five wide column">
+
+                        <div class="ui labeled input">
+                            <div class="ui label">Codigo:</div>
+                            <input type="text" name="est_codigo" id="est_codigo" ng-model="est_codigo">
+                        </div>
+
+                    </div>
+
+                    <div class="two wide column">
+
+                        <button class="ui animated fade blue fluid medium button" ng-click="searchWithCodigo()">
+                            <div class="visible content">Consultar</div>
+                            <div class="hidden content">
+                                <i class="search icon"></i>
+                            </div>
+                        </button>
+
+                    </div>
+
+                    <div class="two wide column">
+                        <div class="ui vertical divider">Ó</div>
+                    </div>
+
+                    <div class="five wide column">
+
+                        <div class="ui labeled input">
+                            <div class="ui label">Nombre:</div>
+                            <input type="text" name="est_nombre" id="est_nombre" ng-model="est_nombre">
+                        </div>
+
+                    </div>
+
+                    <div class="two wide column">
+
+                        <button class="ui animated fade blue fluid medium button" ng-click="searchWithName()">
+                            <div class="visible content">Consultar</div>
+                            <div class="hidden content">
+                                <i class="search icon"></i>
+                            </div>
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!--*************************************************************************************************************-->
+
+
+    <div class="ui divider"></div>
+
+
+    <!--*************************************************************************************************************-->
+    <!--********************************************* SEGMENT DE RESULTADOS *****************************************-->
+    <!--*************************************************************************************************************-->
+    <div class="ui segment clearing blue" id="resultado">
+
+        <h4 class="ui right floated header">
+            <div class="ui teal label">[[listEstaciones.length]] Resultados</div>
+        </h4>
+        <h4 class="ui left floated header">
+            <i class="list icon"></i> Seleccionar estaciones
+        </h4>
+
+
+        <table class="ui very basic compact celled selectable table">
+            <thead>
+            <tr>
+                <th colspan="11">
+                    <div class="ui fluid mini icon input">
+                        <input type="text" ng-model="search" placeholder="Filtrar resultados">
+                        <i class="search icon"></i>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Código</th>
+                <th>Departamento</th>
+                <th>Ciudad/Municipio</th>
+                <th>Tipo</th>
+                <th>Clase</th>
+                <th>Categoria</th>
+                <th>Altitud (m)</th>
+                <th class="center aligned">
+                    <button class="ui icon mini orange button" ng-click="allEstacion()"
+                            data-tooltip="Agregar Todas" data-position="right center" data-inverted="">Todos
+                    </button>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="estacion in listEstaciones | filter : search">
+                <td>[[$index+1]]</td>
+                <td>[[estacion.estn_nombre]]</td>
+                <td>[[estacion.estn_codigo]]</td>
+                <td>[[estacion.depto_nombre]]</td>
+                <td>[[estacion.mun_nombre]]</td>
+                <td>
+                    <span data-inverted="" data-tooltip="[[estacion.tipo_nombre]]" data-position="top left">
+					    <a>[[estacion.tipo_siglas]]</a>
+                    </span>
+                </td>
+                <td>
+                    <span data-inverted="" data-tooltip="[[estacion.clase_nombre]]" data-position="top left">
+                        <a>[[estacion.clase_siglas]]</a>
+                    </span>
+                </td>
+                <td>
+                   <span data-inverted="" data-tooltip="[[estacion.cat_nombre]]" data-position="top left">
+                       <a>[[estacion.cat_siglas]]</a>
+                   </span>
+                </td>
+                <td>[[estacion.estn_altitud]]</td>
+                <td class="selectable center aligned" data-tooltip="Seleccionar estación"
+                    data-position="top center" data-inverted="">
+
+                    <div ng-click="addEstacion(estacion)">
+                        <i class="plus square outline icon green"></i>
+                    </div>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <!--*************************************************************************************************************-->
+
+
+    <div class="ui divider"></div>
+
+
+    <!--*************************************************************************************************************-->
+    <!--***************************************** CONFIGURACION DE DESCARGA *****************************************-->
+    <!--*************************************************************************************************************-->
+    <div class="ui segment yellow">
+
+        <form action="{% url 'clima:clima_month_download_csv' %}" method="GET">
+            {% csrf_token %}
+
+            <div class="ui grid">
+
+                <div class="ten wide column">
+
+                    <div class="ui clearing">
+                        <h4 class="ui left floated header">
+                            <i class="checkmark box icon"></i> Estaciones seleccionadas
+                        </h4>
+                        <h4 class="ui right floated header">
+                            <div class="ui teal label">[[listSeleccionados.length]] Estaciones seleccionadas</div>
+                        </h4>
+                    </div>
+
+                    <br>
+                    <div class="ui divider"></div>
+
+                    <table class="ui very basic compact celled table">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Código</th>
+                            <th>Departamento</th>
+                            <th>Ciudad/Municipio</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="etcn in listSeleccionados">
+                            <td>[[etcn.estn_nombre]]</td>
+                            <td>[[etcn.estn_codigo]]</td>
+                            <td>[[etcn.depto_nombre]]</td>
+                            <td>[[etcn.mun_nombre]]</td>
+                            <td class="selectable center aligned" data-tooltip="Remover estación"
+                                data-position="top center" data-inverted="">
+
+                                <div ng-click="delEstacion(etcn)">
+                                    <i class="minus square outline icon red"></i>
+                                </div>
+                                <input type="hidden" name="estaciones" value="[[etcn.estn_codigo]]">
+
+                            </td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="six wide column">
+
+                    <div class="ui form">
+
+                        <h5 class="ui header dividing"><i class="calendar icon"></i> Rango de fechas</h5>
+                        <div class="ui grid">
+
+                            <div class="sixteen wide column">
+                                <div class="field">
+                                    <label>Fecha inicial</label>
+                                    <input type="month" min="1980-01" size="10" name="first_date" required="required"
+                                           value="1980-01">
+                                </div>
+                            </div>
+
+                            <div class="sixteen wide column">
+                                <div class="field">
+                                    <label>Fecha final</label>
+                                    <input type="month" min="1980-01" name="second_date" required="required">
+                                </div>
+                            </div>
+
+                            <div class="sixteen wide column">
+                                <button type="submit" class="ui animated fluid green fade button"
+                                        ng-disabled="listSeleccionados.length <= 0">
+                                    <div class="visible content">
+                                        <i class="file excel outline icon"></i> Generar y descargar documento en formato
+                                        csv
+                                    </div>
+                                    <div class="hidden content">
+                                        Descargar documento
+                                    </div>
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock contenido %}
+
+
+{% block script %}
+<script type="text/javascript" src="{% static 'bower_components/leaflet/dist/leaflet.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/Leaflet_draw/leaflet-draw/dist/leaflet.draw-src.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/Leaflet.label/dist/leaflet.label.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/leaflet-search/src/leaflet-search.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/leaflet-loader/leaflet-loader.js' %}"></script>
+<script type="text/javascript" src="{% static 'angularjs/services/EstacionesService.js' %}"></script>
+<script type="text/javascript" src="{% static 'angularjs/controller/dashboard/ClimaMonthController.js' %}"></script>
+<script>
+
+	$(document).ready(function() {
+		$('.menu .item').tab();
+	});
+
+	$('#municipio_id').dropdown({
+		apiSettings: { url: '/orgtecol/mun_query_string_json?query={query}' }
+	});
+
+	$('#departamento_id').dropdown({
+		apiSettings: { url: '/orgtecol/depto_query_string_json?query={query}' }
+	});
+
+
+</script>
+
+{% endblock script %}

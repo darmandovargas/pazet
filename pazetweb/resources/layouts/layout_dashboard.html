@@ -1,0 +1,195 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="es" data-ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>PAZ - ET</title>
+
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon"/>
+
+    <link rel="stylesheet" href="{% static 'bower_components/semantic/dist/semantic.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bower_components/components-font-awesome/css/font-awesome.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bower_components/hover/css/hover.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}"/>
+
+
+    <link rel="stylesheet" href="{% static 'plugins/alertifyjs/css/alertify.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'plugins/alertifyjs/css/themes/default.min.css' %}"/>
+
+
+
+    {% block css %}
+
+    {% endblock %}
+
+</head>
+<body>
+
+<!--MENU FIJO SUPERIOR-->
+
+<div class="ui bottom attached">
+
+    <!--SIDEBAR DERECHO CONTIENE LA CONFIGURACION DE USUARIO-->
+    <div class="ui right vertical styled secundario sidebar menu">
+
+        <div class="ui segments">
+
+            <div class="ui segment">
+                <h3 class="ui header">Bienvenido!</h3>
+
+                <img class="ui avatar image" src="/public/images/avatar.png">
+                <span>
+                    {% if user.first_name %}
+                        {{ user.first_name | capfirst }}{{ user.last_name | capfirst }}
+                    {% else %}
+                        {{ user.username | upper }}
+                    {% endif %}
+
+                </span>
+
+                <div class="ui divider"></div>
+
+                <div class="ui mini vertical basic fluid buttons">
+                    <button class="ui button"><i class="address card outline icon"></i>Actualizar informacion</button>
+                    <button class="ui button"><i class="keyboard icon"></i>Cambiar contraseña</button>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'admin:index' %}" class="ui teal button">
+                            <i class="configure icon"></i>Administrador
+                        </a>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="ui divider"></div>
+
+                <a href="{% url 'auth:logout'%}" class="fluid ui animated orange fade button">
+                    <div class="visible content">Salir <i class="sign out icon"></i></div>
+                    <div class="hidden content">Terminar sesión</div>
+                </a>
+
+            </div>
+
+            <div class="ui segment">
+                <h3 class="ui header">Información de interes</h3>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aspernatur assumenda cum dolore in
+                    inventore molestiae molestias nam necessitatibus officiis, optio, perferendis possimus qui quod
+                    saepe,
+                    sequi totam unde veritatis!
+                </p>
+            </div>
+
+            <div class="ui segment">
+                <h3 class="ui header">Sabias que...</h3>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aspernatur assumenda cum dolore in
+                    inventore molestiae molestias nam necessitatibus officiis, optio, perferendis possimus qui quod
+                    saepe,
+                    sequi totam unde veritatis!
+                </p>
+            </div>
+
+            <div class="ui segment">
+                <h3 class="ui header">PAZ - ET</h3>
+                <img class="ui image" src="/public/images/planta.png">
+                <p><a class="ui teal tag label">Analizando el campo colombiano</a></p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="ui fixed inverted menu">
+
+        <div class="left menu">
+
+            <a href="{% url 'dashboard:index' %}" class="item">
+                <div data-inverted="" data-tooltip="Inicio" data-position="bottom left">
+                    <i class="home icon"></i> Inicio
+                </div>
+            </a>
+
+            {% block menu %}
+
+            {% endblock %}
+
+        </div>
+
+        <div class="right menu">
+
+            <div class="ui dropdown active green item">
+                <img class="ui avatar image" src="/public/images/avatar.png">
+                <strong>
+                    {% if user.first_name %}
+                    {{ user.first_name | capfirst }}
+                    {% else %}
+                    {{ user.username | upper }}
+                    {% endif %}
+                </strong>
+                <i class="dropdown icon"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="pusher">
+        {% block contenido %}
+
+        {% endblock %}
+    </div>
+</div>
+
+
+
+
+
+
+
+<script type="text/javascript" src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/semantic/dist/semantic.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/angular/angular.js' %}"></script>
+<script type="text/javascript" src="{% static 'angularjs/AngularDjagoConfig.js' %}"></script>
+<script type="text/javascript" src="{% static 'angularjs/Filters.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'plugins/alertifyjs/alertify.min.js' %}"></script>
+<script src="{% static 'bower_components/moment/moment.js' %}"></script>
+
+
+<script>
+
+        //MENU IZQUIERDO
+        //$('.ui.sidebar.principal').sidebar({context: $('.bottom.attached')})
+        //    .sidebar('attach events', '.fixed.menu .left.menu .item').sidebar('setting', 'transition', 'scale down');
+
+        //MENU DERECHO
+        $('.ui.sidebar.secundario').sidebar({context: $('.bottom.attached')})
+            .sidebar('attach events', '.fixed.menu .right.menu .item').sidebar('setting', 'transition', 'overlay');
+
+
+		//ESTO ES PARA QUE FUNCIONEN LOS DROPDOWN DEL MENU
+		//$('.ui.dropdown').dropdown();
+		//$('#menup').dropdown();
+
+
+		$('.message .close').on('click', function() { $(this).closest('.message').transition('swing down'); });
+
+		$('#loader').hide();
+
+
+
+
+
+
+
+
+
+</script>
+
+{% block script %}
+
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% extends "layouts/layout_dashboard.html" %}
+{% load staticfiles %}
+
+
+{% block css %}
+
+{% endblock css %}
+
+
+{% block contenido %}
+
+<div class="ui container margintop">
+
+    <div class="ui segment">
+
+
+        <h2 class="ui header dividing">
+            <img src="{% static 'images/dashboard/suelo/suelo_tittle.png' %}" class="ui image">
+            <div class="content">
+                Suelo
+                <div class="sub header">
+                    Información y funcionalidades de suelos
+                </div>
+            </div>
+        </h2>
+
+
+        <div class="ui clearing divider"></div>
+
+
+
+
+    </div>
+
+    <div class="ui divider"></div>
+
+    <div class="ui segment">
+
+        <h2 class="ui dividing header">
+            <img class="ui image" src="{% static 'images/dashboard/suelo/layer_gis.png' %}">
+            <div class="content">
+                Funcionalidades
+            </div>
+        </h2>
+
+        <div class="ui six link cards">
+
+            <a href="#" class="card popupp" data-html="<div class='header'>Poligonos de thiessen</div>
+            <div class='content'>Genere poligonos de thiessen de información seleccionada</div>">
+                <div class="image">
+                    <img src="{% static 'images/dashboard/suelo/voronoi.png' %}">
+                </div>
+                <div class="extra">
+                    Poligonos de thiessen
+                </div>
+            </a>
+
+            <a href="#" class="card popupp" data-html="<div class='header'>Interpolación IDW</div>
+            <div class='content'>Espacialize información a travez del metodo de interpolación IDW</div>">
+                <div class="image">
+                    <img src="{% static 'images/dashboard/suelo/raster_example.png' %}">
+                </div>
+                <div class="extra">
+                    IDW Interpolación
+                </div>
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock contenido %}
+
+
+{% block script %}
+<script>
+    $('.popupp').popup();
+</script>
+
+{% endblock script %}

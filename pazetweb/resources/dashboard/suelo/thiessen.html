@@ -1,0 +1,281 @@
+{% extends "layouts/layout_dashboard.html" %}
+{% load staticfiles %}
+
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'bower_components/leaflet/dist/leaflet.css' %}"/>
+<link rel="stylesheet" href="{% static 'plugins/Leaflet_draw/leaflet-draw/dist/leaflet.draw.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet-loader/leaflet-loader.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.css' %}"/>
+{% endblock css %}
+
+
+{% block contenido %}
+
+<div class="ui container margintop" ng-controller="SueloThiessenController">
+
+    <div class="ui segment">
+
+
+        <h2 class="ui header dividing">
+            <img src="{% static 'images/dashboard/suelo/voronoi.png' %}" class="ui image">
+            <div class="content">
+                Poligonos de <strong>thiessen</strong>
+                <div class="sub header">
+                    Genere poligonos de thiessen teniendo en cuenta la información de suelos
+                </div>
+            </div>
+        </h2>
+
+
+    </div>
+
+
+    <!--CONDITIONS-->
+    <div class="ui divider"></div>
+
+    <div class="ui segment" ng-class="!propMetalesPesados.length ? 'loading' : ''">
+
+        <h3 class="ui header dividing">
+            Condicionar selección de puntos (Opcional)
+            <div class="sub header">
+                Seleccione las propiedades que deben contener información en cada punto, los puntos que no posean
+                información en las variables seleccionadas serán descartados.
+            </div>
+        </h3>
+
+        <div class="ui three column grid">
+
+            <!-- ----------------------------------------------------------------------------------------------------
+            --------------------------------------------- FISICAS ----------------------------------------------
+            ---------------------------------------------------------------------------------------------------- -->
+
+
+            <div class="column">
+
+                <h3 class="ui dividing header">
+                    <i class="lab icon"></i> Propiedades fisicas
+                </h3>
+
+                <div class="ui middle aligned divided list">
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox" ng-model="fruits.apple">
+                        </div>
+                        <div class="content">Arena</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Limo</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Arcilla</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Densidad aparente</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Densidad real</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Porosidad total</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Saturación</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ----------------------------------------------------------------------------------------------------
+            --------------------------------------------- QUIMICAS ----------------------------------------------
+            ---------------------------------------------------------------------------------------------------- -->
+            <div class="column">
+
+                <h3 class="ui dividing header">
+                    <i class="lab icon"></i> Propiedades quimicas
+                </h3>
+
+                <div class="ui middle aligned divided list">
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Carbono organico</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Materia organica</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">PH</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Acidez</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Aluminio</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Calcio</div>
+                    </div>
+
+                    <div class="item">
+                        <div class="right floated content">
+                            <input type="checkbox">
+                        </div>
+                        <div class="content">Magenesio</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ----------------------------------------------------------------------------------------------------
+            --------------------------------------------- METALES PESADOS ----------------------------------------------
+            ---------------------------------------------------------------------------------------------------- -->
+            <div class="column">
+
+                <h3 class="ui dividing header">
+                    <i class="lab icon"></i> Metales pesados
+                </h3>
+
+                <div class="ui middle aligned divided list">
+
+                    <div class="item" ng-repeat="pmetal in propMetalesPesados">
+                        <div class="right floated content">
+                            <input type="checkbox" checklist-model="pmetalSeleccionado.propMetal" checklist-value="pmetal.value">
+                        </div>
+                        <div class="content">[[pmetal.text]]</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!--MAPA-->
+    <div class="ui divider"></div>
+
+    <div class="ui segment">
+
+        <div class="ui info message">
+            <i class="close icon"></i>
+            <div class="header">Información</div>
+            Utilizando las herramientas de dibujo, delineé un área de interés. Puede cambiar la maya de puntos por
+            perfiles o muestras
+        </div>
+
+        <button class="ui orange button" id="btn_pefiles">Perfiles</button>
+
+        <button class="ui teal button" id="btn_muestras">Muestras</button>
+
+        <div id="mapa" style="width: 100%;height: 500px;"></div>
+
+    </div>
+
+
+    <!--BTN DESCARGA-->
+    <div class="ui divider"></div>
+
+    <div class="ui segment">
+
+        <div class="ui form">
+            <div class="three fields">
+                <div class="field">
+                    <div class="ui right labeled left icon input">
+                        <i class="file archive outline icon"></i>
+                        <input type="text" ng-model="archivo" placeholder="voronoi">
+                        <a class="ui tag label">Archivo (ZIP)</a>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui right labeled left icon input">
+                        <i class="object group icon"></i>
+                        <input type="num" ng-model="buffer" placeholder="10">
+                        <a class="ui tag label">Zona de influencia (Buffer)</a>
+                    </div>
+                </div>
+                <div class="field">
+                    <button class="ui green fluid button" ng-click="generarThiessen()">
+                        <i class="cloud download icon"></i> Generar y Descargar poligonos de Thiessen
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="ui divider"></div>
+
+</div>
+{% endblock contenido %}
+
+
+{% block script %}
+
+<script src="{% static 'bower_components/checklist-model/checklist-model.js' %}"></script>
+
+<script src="{% static 'bower_components/leaflet/dist/leaflet.js' %}"></script>
+<script src="{% static 'plugins/Leaflet_draw/leaflet-draw/dist/leaflet.draw-src.js' %}"></script>
+<script src="{% static 'bower_components/Leaflet.label/dist/leaflet.label.js' %}"></script>
+<script src="{% static 'bower_components/leaflet-loader/leaflet-loader.js' %}"></script>
+<script src="{% static 'bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.min.js' %}"></script>
+
+<script src="{% static 'plugins/leaflet-button/L.Control.Button.js' %}"></script>
+
+<script src="{% static 'angularjs/services/SueloService.js' %}"></script>
+<script src="{% static 'angularjs/controller/dashboard/SueloThiessenController.js' %}"></script>
+
+{% endblock script %}

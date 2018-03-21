@@ -1,0 +1,61 @@
+body {
+    background: url('/public/images/fondo.png') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    overflow:hidden !important;
+}
+
+.form-holder {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+}
+
+.fondo_login {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+}
+
+.form-head {
+    font-size: 30px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 0 30px #000;
+    margin: 15px auto 30px auto;
+}
+
+.remember-me {
+    text-align: left;
+}
+
+.ui.checkbox label {
+    color: #ddd;
+}
+
+@font-face {
+    font-family: 'BAUHS93';
+    /* Antes de descargar el archivo, le decimos al buscador
+    que intente buscar en local la fuente con nombre
+    Cabin, Cabin Regular o Cabin-Regular */
+    src: local('BAUHS93'), url(/public/fonts/BAUHS93/BAUHS93.woff) format('woff');
+}
+
+.login_title{
+    color: #0B4600;
+    font-weight: bold;
+    font-family: 'BAUHS93';
+    text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+    font-size:30px;
+}
+
+.stilepaz{
+    font-family: 'BAUHS93';
+    font-weight:bold;
+    font-size:50px;
+    color: white;
+    text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+    -webkit-text-stroke: 3px #0B4600;
+    text-shadow: 0px 0px 10px #0B4600;
+}
