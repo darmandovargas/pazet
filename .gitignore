@@ -2,3 +2,5 @@
 \.idea/
 
 pazetweb/env/
+
+pazetweb/App/settings\.py
