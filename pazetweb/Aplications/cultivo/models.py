@@ -18,13 +18,13 @@ class Cultivo(models.Model):
     class Meta:
         managed = True
         db_table = 'cultivo'
-        verbose_name = 'Cultivo_'
+        verbose_name = 'Cultivo'
         verbose_name_plural = 'Cultivos'
 
 
 class TipoCultivo(models.Model):
     tipcul_id = models.BigAutoField(primary_key=True)
-    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo_")
+    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo")
     tipcul_nombre = models.CharField("Nombre de Cultivo", unique=True, max_length=50)
     tipcul_created = models.DateTimeField("Registro", auto_now_add=True)
     tipcul_updated = models.DateTimeField("Actualización", auto_now=True)
