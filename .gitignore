@@ -1,8 +1,10 @@
 
 \.idea/
 
+pazetweb/env/
+
+pazetweb/App/settings\.py
+
 virtualenv/
 
 *.pyc
-
-pazetweb/App/settings\.py
