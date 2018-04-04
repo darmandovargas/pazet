@@ -6,3 +6,5 @@ pazetweb/env/
 pazetweb/App/settings\.py
 
 *.pyc
+
+virtualenv/
