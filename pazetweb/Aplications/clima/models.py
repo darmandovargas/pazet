@@ -37,6 +37,7 @@ class ClimaCo2(models.Model):
         db_table = 'clima_co2'
         verbose_name = 'CO2'
         verbose_name_plural = 'CO2s'
+        ordering = ['cotwo_year', ]
 
 
 class ClimaDiario(models.Model):
