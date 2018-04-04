@@ -2,3 +2,7 @@
 \.idea/
 
 virtualenv/
+
+*.pyc
+
+pazetweb/App/settings\.py
