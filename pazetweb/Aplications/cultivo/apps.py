@@ -5,4 +5,4 @@ from django.apps import AppConfig
 
 
 class CultivoConfig(AppConfig):
-    name = 'cultivo'
+    name = 'Aplications.cultivo'
