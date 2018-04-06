@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.contrib.gis.db import models as Geomodels
 from Aplications.orgtecol.models import Municipio
+#from django.db.models.deletion import PROTECT
 from django.db import models
 
 # Create your models here.
@@ -25,7 +26,8 @@ class Cultivo(models.Model):
 
 class TipoCultivo(models.Model):
     tipcul_id = models.BigAutoField(primary_key=True)
-    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    # Agregado sin _id ya que por defecto django la pone en la migración
+    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
     tipcul_nombre = models.CharField("Nombre de Cultivo", unique=True, max_length=50)
     tipcul_created = models.DateTimeField("Registro", auto_now_add=True)
     tipcul_updated = models.DateTimeField("Actualización", auto_now=True)
@@ -44,7 +46,7 @@ class NivelFreatico(models.Model):
     nivfre_nombre = models.CharField("Tipo de Cultivo", max_length=50)
     nivfre_coordenadas = Geomodels.PointField("Coordenadas Nivel Freático", srid=4326, help_text="Seleccione un punto de ubicación")
     nivfre_altitud = models.IntegerField("Altitud", blank=True, null=True)
-    mun_id = models.ForeignKey(Municipio, verbose_name="Municipio")
+    mun = models.ForeignKey(Municipio, verbose_name="Municipio")
     nivfre_created = models.DateTimeField("Registro", auto_now_add=True)
     nivfre_updated = models.DateTimeField("Actualización", auto_now=True)
 
@@ -60,7 +62,7 @@ class NivelFreatico(models.Model):
 
 class FechaSiembra(models.Model):
     fecsiem_id = models.BigAutoField(primary_key=True)
-    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
     fecsiem_fecha_siembra = models.DateField("Fecha Siembra")
     fecsiem_created = models.DateTimeField("Registro", auto_now_add=True)
     fecsiem_updated = models.DateTimeField("Actualización", auto_now=True)
@@ -76,7 +78,7 @@ class FechaSiembra(models.Model):
 
 class AqFisioConserva(models.Model):
     aqfisoconser_id = models.BigAutoField(primary_key=True)
-    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
     aqfisioconser_Temp_base = models.FloatField("Temperatura Mínima", blank=True, null=True)
     aqfisioconser_Temp_corte = models.FloatField("Temperatura de Corte", blank=True, null=True)
     aqfisioconser_cs = models.FloatField("Covertura de Suelo", blank=True, null=True)
@@ -125,7 +127,7 @@ class AqFisioConserva(models.Model):
 
 class AqFisioNoConser(models.Model):
     aqfisonoconser_id = models.BigAutoField(primary_key=True)
-    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
     aqfisionoconser_plantasxha = models.FloatField("Densidad de Siembra", blank=True, null=True)
     aqfisionoconser_t0 = models.SmallIntegerField("Tiempo Transcurrido")
     aqfisionoconser_cdx = models.SmallIntegerField("Máxima cobertura")
@@ -157,7 +159,7 @@ class AqFisioNoConser(models.Model):
 
 class ReqNutricion(models.Model):
     reqnut_id = models.BigAutoField(primary_key=True)
-    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
     reqnut_ph_min = models.FloatField("Ph Mínimo", blank=True, null=True)
     reqnut_ph_max = models.FloatField("Ph Máximo", blank=True, null=True)
     reqnut_ce_min = models.FloatField("Conductividad Eléctrica Mínima", blank=True, null=True)
@@ -208,7 +210,7 @@ class ReqNutricion(models.Model):
 
 class ReqFisico(models.Model):
     reqfis_id = models.BigAutoField(primary_key=True)
-    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
     reqfis_drenaje_opt = models.CharField("Clase de Drenaje Óptimo", blank=True, null=True, max_length=15)
     reqfis_drenaje_mod = models.CharField("Clase de Drenaje Moderado", blank=True, null=True, max_length=15)
     reqfis_drenaje_rest = models.CharField("Clase de Drenaje Restrictivo", blank=True, null=True, max_length=15)
@@ -235,7 +237,7 @@ class ReqFisico(models.Model):
 
 class TipoRiego(models.Model):
     tiporiego_id = models.BigAutoField(primary_key=True)
-    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
     tiporiego_metodo = models.SmallIntegerField("Tipo Riego Método", blank=True, null=True)
     tiporiego_humedecimiento = models.FloatField("Profundidad Moderada", blank=True, null=True)
     tiporiego = models.SmallIntegerField("Superficie de Suelo Humedecido")
@@ -253,7 +255,7 @@ class TipoRiego(models.Model):
 
 class EventoRiego(models.Model):
     eventoriego_id = models.BigAutoField(primary_key=True)
-    tiporiego_id = models.ForeignKey(TipoRiego, verbose_name="Tipo de Riego")
+    tiporiego = models.ForeignKey(TipoRiego, verbose_name="Tipo de Riego")
     eventoriego_n = models.SmallIntegerField("Número de Eventos")
     eventoriego_dia_n = models.CharField("Día Riego", max_length=200)
     eventoriego_lamina_n = models.CharField("Lámina Aplicada", blank=True, null=True, max_length=200)
