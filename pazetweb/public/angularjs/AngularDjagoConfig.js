@@ -3,7 +3,7 @@
  */
 
 //angularJS
-var app = angular.module('app',[]);
+var app = angular.module('app',['ngMaterial', 'ngMessages']);
 
      app.config(['$interpolateProvider', '$httpProvider',function ($interpolateProvider, $httpProvider) {
         //configuramos los símbolos  

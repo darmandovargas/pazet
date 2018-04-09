@@ -279,4 +279,3 @@ class EventoRiego(models.Model):
         db_table = 'cul_evento_riego'
         verbose_name = 'Evento Riego'
         verbose_name_plural = 'Eventos Riegos'
-

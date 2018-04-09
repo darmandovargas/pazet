@@ -163,14 +163,88 @@ def emisiones_with_escenario_json(request):
 
     return JsonResponse({'emisiones':emisi, 'yearemi':yearemi}, safe=False)
 
+def clima_year_estn_year_json(request):
+
+    codigo_estacion = request.GET.get('codigo', None)
+    yearini = request.GET.get('anioini', None)
+    yearfin = request.GET.get('aniofin', None)
+    intervalo = request.GET.get('intervalo', None)
+
+    if intervalo == "1":
+        query = '''select general.clima_mensual.*,
+                    (select SUM(cmen_precipitacion)
+                    from general.clima_mensual 
+                    where estn_codigo='%s' and ( cmen_year >= %s and cmen_year <= %s ) ) as cmen_precipitacion_total 
+                    from general.clima_mensual 
+                    where estn_codigo='%s' and ( cmen_year >= %s and cmen_year <= %s )
+                    ORDER BY cmen_year, cmen_month
+                    LIMIT 1''' % (codigo_estacion, yearini, yearfin, codigo_estacion, yearini, yearfin)
+    else:
+        query = '''select general.clima_mensual.*,
+                        (select SUM(cmen_precipitacion)
+                        from general.clima_mensual 
+                        where estn_codigo='%s' and cmen_year = %s ) as cmen_precipitacion_total 
+                        from general.clima_mensual 
+                        where estn_codigo='%s' and cmen_year = %s 
+                        ORDER BY cmen_year, cmen_month
+                        LIMIT 1''' % (codigo_estacion, yearini, codigo_estacion, yearini)
+        print query
+
+
+    cursor = connection.cursor()
+    cursor.execute(query)
+    columns = [x.name for x in cursor.description]
+    climas = cursor.fetchall()
+
+    fecha, ppt, temp_med, temp_max, temp_min, hum, bs, datos = [], [], [], [], [], [], [], []
+
+    for clima in climas:
+        row = dict(zip(columns, clima))
+
+        if intervalo == "1":
+            fdate = yearini + " - " + yearfin
+        else:
+            fdate = str(row['cmen_year'])
+
+
+        fecha.append(fdate)
+        ppt.append(row['cmen_precipitacion_total'] or None)
+        temp_max.append(row['cmen_temp_max'] or None)
+        temp_med.append(row['cmen_temp_media'] or None)
+        temp_min.append(row['cmen_temp_min'] or None)
+        hum.append(row['cmen_humedad_relativa'] or None)
+        bs.append(row['cmen_brillo_solar'] or None)
+
+        datos.append({
+            'fecha': fdate, 'ppt': row['cmen_precipitacion_total'], 'temp_max': row['cmen_temp_max'],
+            'temp_med': row['cmen_temp_media'], 'temp_min': row['cmen_temp_min'], 'hum': row['cmen_humedad_relativa'],
+            'bs': row['cmen_brillo_solar']
+        })
+
+    data = {
+        'fecha': fecha, 'ppt': ppt, 'temp_med':temp_med, 'temp_max':temp_max, 'temp_min':temp_min, 'hum':hum, 'bs':bs,
+        'datos':datos
+    }
+
+    return JsonResponse(data, safe=False)
 
 def clima_month_estn_year_json(request):
 
     codigo_estacion = request.GET.get('codigo', None)
     yearini = request.GET.get('anioini', None)
+    yearfin = request.GET.get('aniofin', None)
+    monthini = request.GET.get('mesini', None)
+    monthfin = request.GET.get('mesfin', None)
+    intervalo = request.GET.get('intervalo', None)
 
-    query = '''select * from general.clima_mensual where estn_codigo='%s' and cmen_year = %s 
-    ORDER BY cmen_year, cmen_month''' % (codigo_estacion, yearini)
+    if intervalo == "1":
+        query = '''select * from general.clima_mensual where estn_codigo='%s' and ( (cmen_year >= %s and cmen_month >= %s and cmen_year < %s) or (cmen_year = %s and cmen_month <= %s ) )   
+            ORDER BY cmen_year, cmen_month''' % (codigo_estacion, yearini, monthini, yearfin, yearfin, monthfin)
+    else:
+        query = '''select * from general.clima_mensual where estn_codigo='%s' and cmen_year = %s 
+            ORDER BY cmen_year, cmen_month''' % (codigo_estacion, yearini)
+
+
 
     cursor = connection.cursor()
     cursor.execute(query)
@@ -210,10 +284,18 @@ def clima_day_estn_year_json(request):
 
     codigo_estacion = request.GET.get('codigo', None)
     yearini = request.GET.get('anioini', None)
+    yearfin = request.GET.get('aniofin', None)
+    fechaini = request.GET.get('fechaini', None)
+    fechafin = request.GET.get('fechafin', None)
+    intervalo = request.GET.get('intervalo', None)
 
-    query = '''select * from general.clima_diario where estn_codigo='%s' and 
-    EXTRACT(year FROM cdia_fecha_reporte) = %s ORDER BY cdia_fecha_reporte''' % (codigo_estacion, yearini)
-
+    if intervalo == "1":
+        query = '''select * from general.clima_diario where estn_codigo='%s' and 
+          cdia_fecha_reporte >= '%s' and cdia_fecha_reporte <= '%s' ORDER BY cdia_fecha_reporte''' % (codigo_estacion, fechaini, fechafin)
+    else:
+        query = '''select * from general.clima_diario where estn_codigo='%s' and 
+                  EXTRACT(year FROM cdia_fecha_reporte) = %s ORDER BY cdia_fecha_reporte''' % (codigo_estacion, yearini)
+    print query
     cursor = connection.cursor()
     cursor.execute(query)
     columns = [x.name for x in cursor.description]
