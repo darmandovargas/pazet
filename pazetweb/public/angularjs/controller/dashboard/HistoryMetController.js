@@ -112,8 +112,8 @@ app.controller('HistoryMetController', ['$scope','Estaciones','Clima', function(
 
                  optionsTemp['xAxis']['categories'] = $scope.dataGrap.fecha;
                  optionsTemp['title']['text'] = 'Grafica precipitación, Año: '+anioini+', Estación: '+codigo+ ', Escala: '+$scope.escala;
-                 optionsTemp['series'][0].data = $scope.dataGrap.temp_med;
-                 optionsTemp['series'][1].data = $scope.dataGrap.temp_max;
+                 optionsTemp['series'][0].data = $scope.dataGrap.temp_max;
+                 optionsTemp['series'][1].data = $scope.dataGrap.temp_med;
                  optionsTemp['series'][2].data = $scope.dataGrap.temp_min;
                  Highcharts.chart('graph_temp', optionsTemp);
 
@@ -176,8 +176,8 @@ app.controller('HistoryMetController', ['$scope','Estaciones','Clima', function(
 
                  optionsTemp['xAxis']['categories'] = $scope.dataGrap.fecha;
                  optionsTemp['title']['text'] = 'Grafica precipitación, Año: '+anioini+', Estación: '+codigo+ ', Escala: '+$scope.escala;
-                 optionsTemp['series'][0].data = $scope.dataGrap.temp_med;
-                 optionsTemp['series'][1].data = $scope.dataGrap.temp_max;
+                 optionsTemp['series'][0].data = $scope.dataGrap.temp_max;
+                 optionsTemp['series'][1].data = $scope.dataGrap.temp_med;
                  optionsTemp['series'][2].data = $scope.dataGrap.temp_min;
                  Highcharts.chart('graph_temp', optionsTemp);
 
@@ -240,8 +240,8 @@ app.controller('HistoryMetController', ['$scope','Estaciones','Clima', function(
 
                  optionsTemp['xAxis']['categories'] = $scope.dataGrap.fecha;
                  optionsTemp['title']['text'] = 'Grafica temperatura, Año: '+anioini+', Estación: '+codigo+ ', Escala: '+$scope.escala;
-                 optionsTemp['series'][0].data = $scope.dataGrap.temp_med;
-                 optionsTemp['series'][1].data = $scope.dataGrap.temp_max;
+                 optionsTemp['series'][0].data = $scope.dataGrap.temp_max;
+                 optionsTemp['series'][1].data = $scope.dataGrap.temp_med;
                  optionsTemp['series'][2].data = $scope.dataGrap.temp_min;
                  Highcharts.chart('graph_temp', optionsTemp);
 
