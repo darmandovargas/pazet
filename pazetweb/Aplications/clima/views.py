@@ -171,31 +171,18 @@ def clima_year_estn_year_json(request):
     intervalo = request.GET.get('intervalo', None)
 
     if intervalo == "1":
-        query = '''SELECT general.clima_mensual.*,
-                    (select SUM(coalesce(cmen_precipitacion, 0)) from general.clima_mensual where estn_codigo='%s' and cmen_year >= %s and cmen_year <= %s ) as cmen_precipitacion_total,
-                    (select SUM(coalesce(cmen_brillo_solar, 0)) from general.clima_mensual where estn_codigo='%s' and cmen_year >= %s and cmen_year <= %s ) as cmen_brillo_solar_total,
-                    (select ROUND(AVG(coalesce(cmen_temp_media, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year >= %s and cmen_year <= %s ) as cmen_temp_media_avg,
-                    (select ROUND(AVG(coalesce(cmen_temp_min, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year >= %s and cmen_year <= %s ) as cmen_temp_min_avg,  
-                    (select ROUND(AVG(coalesce(cmen_temp_max, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year >= %s and cmen_year <= %s ) as cmen_temp_max_avg,
-                    (select ROUND(AVG(coalesce(cmen_humedad_relativa, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year >= %s and cmen_year <= %s ) as cmen_humedad_relativa_avg
+        query = '''SELECT DISTINCT(cmen_year), 
+                        SUM(coalesce(cmen_precipitacion, 0)) AS cmen_precipitacion_anual,
+                        ROUND(AVG(coalesce(cmen_temp_media, 0))::numeric, 2)::FLOAT AS cmen_temp_media_avg_anual,
+                        ROUND(AVG(coalesce(cmen_temp_min, 0))::numeric, 2)::FLOAT AS cmen_temp_min_avg_anual,
+                        ROUND(AVG(coalesce(cmen_temp_max, 0))::numeric, 2)::FLOAT AS cmen_temp_max_avg_anual,
+                        SUM(coalesce(cmen_brillo_solar, 0)) AS cmen_brillo_solar_anual,
+                        ROUND(AVG(coalesce(cmen_humedad_relativa, 0))::numeric, 2)::FLOAT AS cmen_humedad_relativa_avg_anual
                     FROM general.clima_mensual 
-                    WHERE estn_codigo='%s' and cmen_year >= %s and cmen_year <= %s 
-                    ORDER BY cmen_year, cmen_month
-                    LIMIT 1''' % (codigo_estacion, yearini, yearfin, codigo_estacion, yearini, yearfin, codigo_estacion, yearini, yearfin, codigo_estacion, yearini, yearfin, codigo_estacion, yearini, yearfin, codigo_estacion, yearini, yearfin, codigo_estacion, yearini, yearfin)
+                    WHERE estn_codigo='%s' and cmen_year >= %s and cmen_year <= %s
+                    GROUP BY cmen_year''' % (codigo_estacion, yearini, yearfin)
     else:
-        query = '''SELECT general.clima_mensual.*,
-                        (select SUM(coalesce(cmen_precipitacion, 0)) from general.clima_mensual where estn_codigo='%s' and cmen_year = %s ) AS cmen_precipitacion_total,
-                        (select SUM(coalesce(cmen_brillo_solar, 0)) from general.clima_mensual where estn_codigo='%s' and cmen_year = %s  ) AS cmen_brillo_solar_total,
-                        (select ROUND(AVG(coalesce(cmen_temp_media, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year = %s  ) AS cmen_temp_media_avg, 
-                        (select ROUND(AVG(coalesce(cmen_temp_min, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year = %s  ) AS cmen_temp_min_avg,
-                        (select ROUND(AVG(coalesce(cmen_temp_max, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year = %s  ) AS cmen_temp_max_avg,
-                        (select ROUND(AVG(coalesce(cmen_humedad_relativa, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year = %s ) as cmen_humedad_relativa_avg  
-                    FROM general.clima_mensual 
-                    WHERE estn_codigo='%s' and cmen_year = %s 
-                    ORDER BY cmen_year, cmen_month
-                    LIMIT 1''' % (codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini)
-        print query
-
+        query = '''SELECT * FROM general.clima_mensual WHERE estn_codigo='%s' and cmen_year = %s ORDER BY cmen_year, cmen_month''' % (codigo_estacion, yearini)
 
     cursor = connection.cursor()
     cursor.execute(query)
@@ -208,24 +195,37 @@ def clima_year_estn_year_json(request):
         row = dict(zip(columns, clima))
 
         if intervalo == "1":
-            fdate = yearini + " - " + yearfin
-        else:
             fdate = str(row['cmen_year'])
+            fecha.append(fdate)
+            ppt.append(row['cmen_precipitacion_anual'] or None)
+            temp_max.append(row['cmen_temp_max_avg_anual'] or None)
+            temp_med.append(row['cmen_temp_media_avg_anual'] or None)
+            temp_min.append(row['cmen_temp_min_avg_anual'] or None)
+            hum.append(row['cmen_humedad_relativa_avg_anual'] or None)
+            bs.append(row['cmen_brillo_solar_anual'] or None)
 
+            datos.append({
+                'fecha': fdate, 'ppt': row['cmen_precipitacion_anual'], 'temp_max': row['cmen_temp_max_avg_anual'],
+                'temp_med': row['cmen_temp_media_avg_anual'], 'temp_min': row['cmen_temp_min_avg_anual'],
+                'hum': row['cmen_humedad_relativa_avg_anual'],
+                'bs': row['cmen_brillo_solar_anual']
+            })
+        else:
+            fdate = str(row['cmen_year']) + ' - ' + str(row['cmen_month'])
+            fecha.append(fdate)
+            ppt.append(row['cmen_precipitacion'] or None)
+            temp_max.append(row['cmen_temp_max'] or None)
+            temp_med.append(row['cmen_temp_media'] or None)
+            temp_min.append(row['cmen_temp_min'] or None)
+            hum.append(row['cmen_humedad_relativa'] or None)
+            bs.append(row['cmen_brillo_solar'] or None)
 
-        fecha.append(fdate)
-        ppt.append(row['cmen_precipitacion_total'] or None)
-        temp_max.append(row['cmen_temp_max_avg'] or None)
-        temp_med.append(row['cmen_temp_media_avg'] or None)
-        temp_min.append(row['cmen_temp_min_avg'] or None)
-        hum.append(row['cmen_humedad_relativa_avg'] or None)
-        bs.append(row['cmen_brillo_solar_total'] or None)
-
-        datos.append({
-            'fecha': fdate, 'ppt': row['cmen_precipitacion_total'], 'temp_max': row['cmen_temp_max_avg'],
-            'temp_med': row['cmen_temp_media_avg'], 'temp_min': row['cmen_temp_min_avg'], 'hum': row['cmen_humedad_relativa_avg'],
-            'bs': row['cmen_brillo_solar_total']
-        })
+            datos.append({
+                'fecha': fdate, 'ppt': row['cmen_precipitacion'], 'temp_max': row['cmen_temp_max'],
+                'temp_med': row['cmen_temp_media'], 'temp_min': row['cmen_temp_min'],
+                'hum': row['cmen_humedad_relativa'],
+                'bs': row['cmen_brillo_solar']
+            })
 
     data = {
         'fecha': fecha, 'ppt': ppt, 'temp_med':temp_med, 'temp_max':temp_max, 'temp_min':temp_min, 'hum':hum, 'bs':bs,
@@ -238,19 +238,25 @@ def clima_month_estn_year_json(request):
 
     codigo_estacion = request.GET.get('codigo', None)
     yearini = request.GET.get('anioini', None)
+    yearini_plus_one = int(yearini) + 1
     yearfin = request.GET.get('aniofin', None)
     monthini = request.GET.get('mesini', None)
     monthfin = request.GET.get('mesfin', None)
     intervalo = request.GET.get('intervalo', None)
 
     if intervalo == "1":
-        query = '''select * from general.clima_mensual where estn_codigo='%s' and ( (cmen_year >= %s and cmen_month >= %s and cmen_year < %s) or (cmen_year = %s and cmen_month <= %s ) )   
-            ORDER BY cmen_year, cmen_month''' % (codigo_estacion, yearini, monthini, yearfin, yearfin, monthfin)
+        query = '''SELECT general.clima_mensual.*
+                    FROM general.clima_mensual 
+                    WHERE estn_codigo='%s' AND 
+                        (
+                        ( cmen_year = %s AND cmen_month >= %s ) OR
+                        ( cmen_year >= %s AND cmen_year < %s ) OR
+                        ( cmen_year = %s AND cmen_month <= %s ) 
+                        )
+                    ORDER BY cmen_year, cmen_month''' % (codigo_estacion, yearini, monthini, yearini_plus_one, yearfin, yearfin, monthfin)
     else:
         query = '''select * from general.clima_mensual where estn_codigo='%s' and cmen_year = %s 
             ORDER BY cmen_year, cmen_month''' % (codigo_estacion, yearini)
-
-
 
     cursor = connection.cursor()
     cursor.execute(query)
@@ -333,6 +339,3 @@ def clima_day_estn_year_json(request):
         'bs': bs, 'datos': datos
     }
     return JsonResponse(data, safe=False)
-
-
-
