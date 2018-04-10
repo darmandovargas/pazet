@@ -138,7 +138,7 @@ app.controller('HistoryMetController', ['$scope','Estaciones','Clima', function(
 
                  optionsBs['xAxis']['categories'] = $scope.dataGrap.fecha;
                  optionsBs['title']['text'] = 'Grafica brillo solar, Año: '+anioini+', Estación: '+codigo+ ', Escala: '+$scope.escala;
-                 optionsBs['series'][0].data = $scope.dataGrap.hum;
+                 optionsBs['series'][0].data = $scope.dataGrap.bs;
                  Highcharts.chart('graph_bs', optionsBs);
 
 
@@ -202,7 +202,7 @@ app.controller('HistoryMetController', ['$scope','Estaciones','Clima', function(
 
                  optionsBs['xAxis']['categories'] = $scope.dataGrap.fecha;
                  optionsBs['title']['text'] = 'Grafica brillo solar, Año: '+anioini+', Estación: '+codigo+ ', Escala: '+$scope.escala;
-                 optionsBs['series'][0].data = $scope.dataGrap.hum;
+                 optionsBs['series'][0].data = $scope.dataGrap.bs;
                  Highcharts.chart('graph_bs', optionsBs);
 
 
