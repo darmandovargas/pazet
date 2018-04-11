@@ -50,7 +50,7 @@ app.controller('HistoryMetController', ['$scope','Estaciones','Clima', function(
     $scope.yearini = 2000;
     $scope.mesini = "1";
     $scope.mesfin = "1";
-    $scope.fechaini = m.format('YYYY/MM/DD');
+    $scope.fechaini = "2011/01/01"; //m.format('YYYY/MM/DD');
     $scope.fechafin = m.format('YYYY/MM/DD');
 
 
