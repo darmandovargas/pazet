@@ -2,30 +2,21 @@
 from __future__ import unicode_literals
 from django.contrib.gis.db import models as Geomodels
 from Aplications.orgtecol.models import Municipio
-<<<<<<< HEAD
-=======
-#from django.db.models.deletion import PROTECT
->>>>>>> dev
 from django.db import models
 
 # Create your models here.
 class Cultivo(models.Model):
     cul_id = models.BigAutoField(primary_key=True)
-<<<<<<< HEAD
-    cul_nombre = models.CharField("Tipo de Cultivo", unique=True, max_length=50)
-=======
     cul_nombre = models.CharField("Tipo de Cultivo", max_length=50)
     cul_variedad = models.CharField("Tipo de Cultivo", blank=True, null=True, max_length=50)
     cul_nombre_cientifico = models.CharField("Tipo de Cultivo", blank=True, null=True, max_length=50)
     cul_nombre_bernaculo = models.CharField("Tipo de Cultivo", blank=True, null=True, max_length=50)
->>>>>>> dev
+    tipo_cultivo=models.CharField("",max_length=25,null=False)
     cul_created = models.DateTimeField("Registro", auto_now_add=True)
     cul_updated = models.DateTimeField("Actualización", auto_now=True)
 
     def __unicode__(self):
         return '{}'.format(self.cul_nombre)
-
-<<<<<<< HEAD
 
     class Meta:
         managed = True
@@ -34,55 +25,29 @@ class Cultivo(models.Model):
         verbose_name_plural = 'Cultivos'
 
 
-class TipoCultivo(models.Model):
-    tipcul_id = models.BigAutoField(primary_key=True)
-    cul_id = models.ForeignKey(Cultivo, verbose_name="Cultivo_")
-=======
-    class Meta:
-        managed = True
-        db_table = 'cultivo'
-        verbose_name = 'Cultivo'
-        verbose_name_plural = 'Cultivos'
-
-class TipoCultivo(models.Model):
-    tipcul_id = models.BigAutoField(primary_key=True)
+#class TipoCultivo(models.Model):
+#    tipcul_id = models.BigAutoField(primary_key=True)
     # Agregado sin _id ya que por defecto django la pone en la migración
-    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
->>>>>>> dev
-    tipcul_nombre = models.CharField("Nombre de Cultivo", unique=True, max_length=50)
-    tipcul_created = models.DateTimeField("Registro", auto_now_add=True)
-    tipcul_updated = models.DateTimeField("Actualización", auto_now=True)
+#    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+#    tipcul_nombre = models.CharField("Nombre de Cultivo", unique=True, max_length=50)
+#    tipcul_created = models.DateTimeField("Registro", auto_now_add=True)
+#    tipcul_updated = models.DateTimeField("Actualización", auto_now=True)
 
-<<<<<<< HEAD
+    #def __unicode__(self):
+#        return '{}'.format(self.tipcul_nombre)
 
-    def __unicode__(self):
-        return '{}'.format(self.tipcul_nombre)
-
-
-=======
-    def __unicode__(self):
-        return '{}'.format(self.tipcul_nombre)
-
->>>>>>> dev
-    class Meta:
-        managed = True
-        db_table = 'cul_tipo_cultivo'
-        verbose_name = 'Tipo de Cultivo'
-        verbose_name_plural = 'Tipos de Cultivos'
+#    class Meta:
+#        managed = True
+#        db_table = 'cul_tipo_cultivo'
+#        verbose_name = 'Tipo de Cultivo'
+#        verbose_name_plural = 'Tipos de Cultivos'
 
 class NivelFreatico(models.Model):
     nivfre_id = models.BigAutoField(primary_key=True)
-<<<<<<< HEAD
-    nivfre_nombre = models.CharField("Tipo de Cultivo", unique=True, max_length=50)
-    nivfre_coordenadas = Geomodels.PointField("Coordenadas Nivel Freático", srid=4326, help_text="Seleccione un punto de ubicación")
-    nivfre_altitud = models.IntegerField("Altitud")
-    mun_id = models.ForeignKey(Municipio, verbose_name="Municipio")
-=======
     nivfre_nombre = models.CharField("Tipo de Cultivo", max_length=50)
     nivfre_coordenadas = Geomodels.PointField("Coordenadas Nivel Freático", srid=4326, help_text="Seleccione un punto de ubicación")
     nivfre_altitud = models.IntegerField("Altitud", blank=True, null=True)
     mun = models.ForeignKey(Municipio, verbose_name="Municipio")
->>>>>>> dev
     nivfre_created = models.DateTimeField("Registro", auto_now_add=True)
     nivfre_updated = models.DateTimeField("Actualización", auto_now=True)
 
@@ -96,9 +61,6 @@ class NivelFreatico(models.Model):
         verbose_name = 'Nivel Freático'
         verbose_name_plural = 'Niveles Freáticos'
 
-<<<<<<< HEAD
-
-=======
 class FechaSiembra(models.Model):
     fecsiem_id = models.BigAutoField(primary_key=True)
     cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
@@ -318,4 +280,4 @@ class EventoRiego(models.Model):
         db_table = 'cul_evento_riego'
         verbose_name = 'Evento Riego'
         verbose_name_plural = 'Eventos Riegos'
->>>>>>> dev
+
