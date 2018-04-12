@@ -18,12 +18,13 @@
 
 
 
+
     {% block css %}
 
     {% endblock %}
 
 </head>
-<body>
+<body ng-app="app" ng-cloack>
 
 <!--MENU FIJO SUPERIOR-->
 
@@ -72,6 +73,9 @@
 
             <div class="ui segment">
                 <h3 class="ui header">Información de interes</h3>
+
+
+
                 <p>
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aspernatur assumenda cum dolore in
                     inventore molestiae molestias nam necessitatibus officiis, optio, perferendis possimus qui quod
@@ -142,14 +146,17 @@
 </div>
 
 
-
-
-
-
-
 <script type="text/javascript" src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'bower_components/semantic/dist/semantic.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'bower_components/angular/angular.js' %}"></script>
+
+<!-- Material Libs for Date Picker -->
+<script src="{% static 'bower_components/angular-animate/angular-animate.js' %}"></script>
+<script src="{% static 'bower_components/angular-aria/angular-aria.js' %}"></script>
+<script src="{% static 'bower_components/angular-messages/angular-messages.js' %}"></script>
+<script src="{% static 'bower_components/angular-material/angular-material.js' %}"></script>
+<!-- END Material Libs for Date Picker -->
+
 <script type="text/javascript" src="{% static 'angularjs/AngularDjagoConfig.js' %}"></script>
 <script type="text/javascript" src="{% static 'angularjs/Filters.js' %}"></script>
 
@@ -176,15 +183,7 @@
 		$('.message .close').on('click', function() { $(this).closest('.message').transition('swing down'); });
 
 		$('#loader').hide();
-
-
-
-
-
-
-
-
-
+		
 </script>
 
 {% block script %}

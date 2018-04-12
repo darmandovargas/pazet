@@ -5,6 +5,12 @@ pazetweb/env/
 
 pazetweb/App/settings\.py
 
+<<<<<<< HEAD
 virtualenv/
 
 *.pyc
+=======
+*.pyc
+
+virtualenv/
+>>>>>>> dev

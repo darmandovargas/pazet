@@ -26,6 +26,10 @@ urlpatterns = [
     url(r'^suelo/', include('Aplications.suelo.urls', namespace="suelo")),
     url(r'^clima/', include('Aplications.clima.urls', namespace="clima")),
     url(r'^agua/', include('Aplications.agua.urls', namespace="agua")),
+<<<<<<< HEAD
     url(r'^cultivo/', include('Aplications.cultivo.urls', namespace="cultivo")),
+=======
+    #url(r'^cultivo/', include('Aplications.cultivo.urls', namespace="cultivo")),
+>>>>>>> dev
 
 ]

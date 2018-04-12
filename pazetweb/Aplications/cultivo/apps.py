@@ -5,4 +5,8 @@ from django.apps import AppConfig
 
 
 class CultivoConfig(AppConfig):
+<<<<<<< HEAD
     name = 'cultivo'
+=======
+    name = 'Aplications.cultivo'
+>>>>>>> dev

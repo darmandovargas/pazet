@@ -1,145 +1,221 @@
 {% extends "layouts/layout_dashboard.html" %}
 {% load staticfiles %}
 
-
 {% block css %}
-<link rel="stylesheet" href="{% static 'bower_components/leaflet/dist/leaflet.css' %}"/>
-<link rel="stylesheet" href="{% static 'bower_components/leaflet-icon-pulse/src/L.Icon.Pulse.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bower_components/leaflet/dist/leaflet.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bower_components/leaflet-icon-pulse/src/L.Icon.Pulse.css' %}"/>
+    <!-- Angular Material style sheet -->
+    <link rel="stylesheet" href="{% static 'css/angular_material/1.1.8/angular-material.min.css' %}">
 {% endblock css %}
 
 {% block menu %}
-<a href="{% url 'dashboard:mapainteractivo' %}" class="item">
-    <div data-inverted="" data-tooltip="Inicio" data-position="bottom left">
-        <i class="map outline icon"></i> Mapa interactivo
-    </div>
-</a>
+    <a href="{% url 'dashboard:mapainteractivo' %}" class="item">
+        <div data-inverted="" data-tooltip="Inicio" data-position="bottom left">
+            <i class="map outline icon"></i> Mapa interactivo
+        </div>
+    </a>
 {% endblock %}
-
 
 {% block contenido %}
 
+    <div class="ui margintop container" ng-controller="HistoryMetController">
 
-<div class="ui margintop container" ng-controller="HistoryMetController">
+        <input type="hidden" id="codigo" value="{{ estacion.estn_codigo }}">
 
-    <input type="hidden" id="codigo" value="{{ estacion.estn_codigo }}">
+        <div class="ui segment">
 
-    <div class="ui segment">
+            <h3 class="ui dividing header">
+                <img id="img_estacion" class="ui image" src="/public/images/estacionsombra.png">
+                <div class="content">
+                    {{ estacion.estn_nombre }} [{{ estacion.estn_codigo }}]
+                    <div class="sub header">
+                        {{ estacion.mun.mun_nombre }}, {{ estacion.mun.depto.depto_nombre }}
+                        ( {{ estacion.mun.depto.depto_iso }} )
+                        - {{ estacion.mun.depto.reg.reg_nombre }}
+                    </div>
+                </div>
+            </h3>
 
-        <h3 class="ui dividing header">
-            <img id="img_estacion" class="ui image" src="/public/images/estacionsombra.png">
-            <div class="content">
-                {{ estacion.estn_nombre}} [{{ estacion.estn_codigo }}]
-                <div class="sub header">
-                    {{ estacion.mun.mun_nombre }}, {{ estacion.mun.depto.depto_nombre }}
-                    ( {{ estacion.mun.depto.depto_iso }} )
-                    - {{ estacion.mun.depto.reg.reg_nombre }}
+            <div class="ui divider"></div>
+
+            <div class="ui horizontal divider">Ubicación y caracteristicas</div>
+
+            <div class="ui grid divided">
+
+                <div class="five wide column">
+                    <div id="mapa" style="width: 100%;height: 260px;"></div>
+                </div>
+
+                <div class="eleven wide column">
+
+                    <table class="ui compact celled definition table">
+
+                        <tbody>
+                        <tr>
+                            <td><h5 class="ui header">ESTACIÓN</h5></td>
+                            <td class="center aligned">{{ estacion.estn_nombre }}</td>
+                            <td><h5 class="ui header">CODIGO</h5></td>
+                            <td class="center aligned">{{ estacion.estn_codigo }}</td>
+                            <td><h5 class="ui header">CORRIENTE</h5></td>
+                            <td class="center aligned">{{ estacion.estn_corriente }}</td>
+                        </tr>
+                        <tr>
+                            <td><h5 class="ui header">LATITUD</h5></td>
+                            <td class="center aligned">{{ estacion.estn_lat }}</td>
+                            <td><h5 class="ui header">LONGITUD</h5></td>
+                            <td class="center aligned">{{ estacion.estn_lng }}</td>
+                            <td><h5 class="ui header">ALTITUD (m)</h5></td>
+                            <td class="center aligned">{{ estacion.estn_altitud }}</td>
+                        </tr>
+                        <tr>
+                            <td><h5 class="ui header">CLASE</h5></td>
+                            <td colspan="2" class="center aligned">({{ estacion.clase.clase_siglas }})
+                                {{ estacion.clase.clase_nombre }}
+                            </td>
+                            <td><h5 class="ui header">TIPO</h5></td>
+                            <td colspan="2" class="center aligned">({{ estacion.tipo.tipo_siglas }})
+                                {{ estacion.tipo.tipo_nombre }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><h5 class="ui header">CATEGORIA</h5></td>
+                            <td colspan="3" class="center aligned">
+                                ({{ estacion.cat.cat_siglas }}) {{ estacion.cat.cat_nombre }}
+                            </td>
+                            <td><h5 class="ui header">PROPIETARIO</h5></td>
+                            <td colspan="1" class="center aligned">
+                                <abbr title="{{ estacion.entds.entds_nombre }}">{{ estacion.entds.entds_siglas }}</abbr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><h5 class="ui header">INSTALACIÓN</h5></td>
+                            <td colspan="2" class="center aligned">{{ estacion.estn_fechainstalacion }}</td>
+                            <td><h5 class="ui header">SUSPENSIÓN</h5></td>
+                            <td colspan="2"
+                                class="center aligned">{{ estacion.estn_fechasuspension | default_if_none:"" }}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
-        </h3>
+
+        </div>
+
 
         <div class="ui divider"></div>
 
-        <div class="ui horizontal divider">Ubicación y caracteristicas</div>
 
-        <div class="ui grid divided">
+        <div class="ui segment" id="graficos">
 
-            <div class="five wide column">
-                <div id="mapa" style="width: 100%;height: 260px;"></div>
-            </div>
+            <h3 class="ui dividing header">
+                <img class="ui image" src="{% static 'images/graficas.png' %}">
+                <div class="content">
+                    Gráficas y Datos
+                </div>
+            </h3>
 
-            <div class="eleven wide column">
+            <div class="ui form">
 
-                <table class="ui compact celled definition table">
-
-                    <tbody>
-                    <tr>
-                        <td><h5 class="ui header">ESTACIÓN</h5></td>
-                        <td class="center aligned">{{estacion.estn_nombre}}</td>
-                        <td><h5 class="ui header">CODIGO</h5></td>
-                        <td class="center aligned">{{estacion.estn_codigo}}</td>
-                        <td><h5 class="ui header">CORRIENTE</h5></td>
-                        <td class="center aligned">{{estacion.estn_corriente}}</td>
-                    </tr>
-                    <tr>
-                        <td><h5 class="ui header">LATITUD</h5></td>
-                        <td class="center aligned">{{estacion.estn_lat}}</td>
-                        <td><h5 class="ui header">LONGITUD</h5></td>
-                        <td class="center aligned">{{estacion.estn_lng}}</td>
-                        <td><h5 class="ui header">ALTITUD (m)</h5></td>
-                        <td class="center aligned">{{estacion.estn_altitud}}</td>
-                    </tr>
-                    <tr>
-                        <td><h5 class="ui header">CLASE</h5></td>
-                        <td colspan="2" class="center aligned">({{estacion.clase.clase_siglas}})
-                            {{estacion.clase.clase_nombre}}
-                        </td>
-                        <td><h5 class="ui header">TIPO</h5></td>
-                        <td colspan="2" class="center aligned">({{estacion.tipo.tipo_siglas}})
-                            {{estacion.tipo.tipo_nombre}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><h5 class="ui header">CATEGORIA</h5></td>
-                        <td colspan="3" class="center aligned">({{estacion.cat.cat_siglas}}) {{estacion.cat.cat_nombre}}
-                        </td>
-                        <td><h5 class="ui header">PROPIETARIO</h5></td>
-                        <td colspan="1" class="center aligned">
-                            <abbr title="{{estacion.entds.entds_nombre}}">{{estacion.entds.entds_siglas}}</abbr>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><h5 class="ui header">INSTALACIÓN</h5></td>
-                        <td colspan="2" class="center aligned">{{estacion.estn_fechainstalacion}}</td>
-                        <td><h5 class="ui header">SUSPENSIÓN</h5></td>
-                        <td colspan="2" class="center aligned">{{estacion.estn_fechasuspension | default_if_none:""}}
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-            </div>
-        </div>
-
-    </div>
-
-
-    <div class="ui divider"></div>
-
-
-    <div class="ui segment" id="graficos">
-
-        <h3 class="ui dividing header">
-            <img class="ui image" src="{% static 'images/graficas.png' %}">
-            <div class="content">
-                Graficas y Datos
-            </div>
-        </h3>
-
-        <div class="ui form">
-
-            <div class="fields">
-
-                <div class="field">
-                    <label style="visibility:hidden;">Escala</label>
-                    <div class="ui green slider checkbox">
-                        <input type="radio" ng-model="escala" value="mensual">
-                        <label>Escala mensual</label>
-                    </div>
-                    <br>
+                <div class="field" style="float: right !important;">
+                    <br><br>
                     <div class="ui slider checkbox">
-                        <input type="radio" ng-model="escala" value="diaria">
-                        <label>Escala diaria</label>
+                        <input type="checkbox" ng-model="intervalo" value="1"  ng-change="consultarDatos()">
+                        <label>Ver Intervalo</label>
                     </div>
                 </div>
 
-                <div class="field">
-                    <label>Año</label>
-                    <select ng-model="yearini" class="ui fluid search dropdown"
-                            ng-options="anio for anio in listYear track by anio"></select>
+                <div class="fields">
+                    <!-- Filtros de Escala -->
+                    <div class="field">
+                        <label style="visibility:hidden;">Escala</label>
+                        <div class="ui slider checkbox">
+                            <input type="radio" ng-model="escala" value="anual" ng-change="consultarDatos()">
+                            <label>Escala Anual</label>
+                        </div>
+                        <br><br>
+                        <div class="ui green slider checkbox">
+                            <input type="radio" ng-model="escala" value="mensual" ng-change="consultarDatos()">
+                            <label>Escala mensual</label>
+                        </div>
+                        <br><br>
+                        <div class="ui slider checkbox">
+                            <input type="radio" ng-model="escala" value="diaria" ng-change="consultarDatos()">
+                            <label>Escala diaria</label>
+                        </div>
+                    </div>
+
+                    <!-- Select Año Sin Intervalo -->
+                    <div class="field" ng-hide="intervalo" style="width: 50%; float:left; padding: 8px;">
+                        <label>Año</label>
+                        <select ng-model="year" class="ui fluid search dropdown"
+                                ng-options="anio for anio in listYear track by anio" ng-change="consultarDatos()"></select>
+                    </div>
+
+                    <!-- Select Año Con Intervalo Anual -->
+                    <div class="field" ng-hide="!intervalo || escala!='anual'" style="width: 40%; float:left; padding: 8px;">
+                        <label>Año Inicial</label>
+                        <select ng-model="yearini" class="ui fluid search dropdown"
+                                ng-options="anio for anio in listYear track by anio" ng-change="consultarDatos()"></select>
+                    </div>
+                    <div class="field" ng-hide="!intervalo || escala!='anual'" style="width: 40%; float:left; padding: 8px;">
+                        <label>Año Final</label>
+                        <select ng-model="yearfin" class="ui fluid search dropdown"
+                                ng-options="anio for anio in listYear track by anio" ng-change="consultarDatos()"></select>
+                    </div>
+
+                    <!-- Select Mes Con Intervalo Mes Año -->
+                    <div class="field" ng-hide="!intervalo || escala!='mensual'" style="width: 70%; display: flex; padding: 8px;">
+
+                        <div style="width: 30%;">
+                            <label>Mes Inicial</label>
+                            <select ng-model='mesini' class="ui fluid search dropdown"
+                                    month-options ng-change="consultarDatos()"></select>
+                        </div>
+                        &nbsp;
+                        <div style="width: 16%;">
+                            <label>Año Inicial</label>
+                            <select ng-model="yearini" class="ui fluid search dropdown"
+                                    ng-options="anio for anio in listYear track by anio" ng-change="consultarDatos()"></select>
+                        </div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+
+                         <div style="width: 30%;">
+                            <label>Mes Final</label>
+                            <select ng-model='mesfin' class="ui fluid search dropdown"
+                                    month-options ng-change="consultarDatos()"></select>
+                        </div>
+                        &nbsp;
+                        <div style="width: 16%;">
+                            <label>Año Final</label>
+                            <select ng-model="yearfin" class="ui fluid search dropdown"
+                                    ng-options="anio for anio in listYear track by anio" ng-change="consultarDatos()"></select>
+                        </div>
+                    </div>
+
+                    <!-- Select Dia Con Intervalo Fecha completa -->
+                    <div class="field" ng-hide="!intervalo || escala!='diaria'">
+                        <md-content layout-padding ng-cloak style="float: left; padding: 8px;">
+                            <div layout-gt-xs="row">
+                                <div flex-gt-xs>
+                                    <h4>Fecha Inicial</h4>
+                                    <md-datepicker ng-model="fechaini" md-placeholder="Enter date" ng-change="consultarDatos()"></md-datepicker>
+                                </div>
+                            </div>
+                        </md-content>
+                        <md-content layout-padding ng-cloak style="float: left;">
+                            <div layout-gt-xs="row">
+                                <div flex-gt-xs>
+                                    <h4>Fecha Final</h4>
+                                    <md-datepicker ng-model="fechafin" md-placeholder="Enter date" ng-change="consultarDatos()"></md-datepicker>
+                                </div>
+                            </div>
+                        </md-content>
+                    </div>
                 </div>
-
-
-                <div class="field">
+<!--
+                <div class="field" style="float: right !important;">
                     <label style="visibility:hidden;">Dia</label>
                     <button class="ui vertical green animated button" ng-click="consultarDatos()">
                         <div class="visible content">Consultar</div>
@@ -148,132 +224,118 @@
                         </div>
                     </button>
                 </div>
+                <br><br><br>
+-->
+            </div>
+
+            <div class="ui divider"></div>
+
+
+            <div class="ui top attached inverted grey tabular menu">
+                <a class="item active" data-tab="first">Precipitación</a>
+                <a class="item" data-tab="second">Temperatura</a>
+                <a class="item" data-tab="three">Humedad</a>
+                <a class="item" data-tab="four">Brillo solar</a>
+                <a class="item" data-tab="five">Datos</a>
+            </div>
+            <div class="ui bottom attached tab segment active" data-tab="first">
+                <div id="graph_ppt" style="min-width: 310px; height: 450px; margin: 0 auto"></div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="second">
+                <div id="graph_temp" style="min-width: 310px; height: 450px; margin: 0 auto"></div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="three">
+                <div id="graph_hum" style="min-width: 310px; height: 450px; margin: 0 auto"></div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="four">
+                <div id="graph_bs" style="min-width: 310px; height: 450px; margin: 0 auto"></div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="five">
+
+                <table class="ui compact selectable table">
+                    <thead>
+                    <tr>
+                        <th><strong>Fecha</strong></th>
+                        <th class="center aligned">Precipitación</th>
+                        <th class="center aligned">Temp maxima</th>
+                        <th class="center aligned">Temp media</th>
+                        <th class="center aligned">Temp minima</th>
+                        <th class="center aligned">Humedad</th>
+                        <th class="center aligned">Brillo solar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="dato in dataGrap.datos">
+                        <td>[[ dato['fecha'] | ifEmpty: "--" ]]</td>
+                        <td class="center aligned">[[ dato['ppt'] | ifEmpty: "--" ]] mm</td>
+                        <td class="center aligned">[[ dato['temp_max'] | ifEmpty: "--" ]] °C</td>
+                        <td class="center aligned">[[ dato['temp_med'] | ifEmpty: "--" ]] °C</td>
+                        <td class="center aligned">[[ dato['temp_min'] | ifEmpty: "--" ]] °C</td>
+                        <td class="center aligned">[[ dato['hum'] | ifEmpty: "--" ]]%</td>
+                        <td class="center aligned">[[ dato['bs'] | ifEmpty: "--" ]]</td>
+                    </tr>
+                    </tbody>
+                </table>
 
             </div>
+
         </div>
 
         <div class="ui divider"></div>
 
-
-        <div class="ui top attached inverted grey tabular menu">
-            <a class="item active" data-tab="first">Precipitación</a>
-            <a class="item" data-tab="second">Temperatura</a>
-            <a class="item" data-tab="three">Humedad</a>
-            <a class="item" data-tab="four">Brillo solar</a>
-            <a class="item" data-tab="five">Datos</a>
-        </div>
-        <div class="ui bottom attached tab segment active" data-tab="first">
-            <div id="graph_ppt" style="min-width: 310px; height: 450px; margin: 0 auto"></div>
-        </div>
-        <div class="ui bottom attached tab segment" data-tab="second">
-            <div id="graph_temp" style="min-width: 310px; height: 450px; margin: 0 auto"></div>
-        </div>
-        <div class="ui bottom attached tab segment" data-tab="three">
-            <div id="graph_hum" style="min-width: 310px; height: 450px; margin: 0 auto"></div>
-        </div>
-        <div class="ui bottom attached tab segment" data-tab="four">
-            <div id="graph_bs" style="min-width: 310px; height: 450px; margin: 0 auto"></div>
-        </div>
-        <div class="ui bottom attached tab segment" data-tab="five">
-
-            <table class="ui compact selectable table">
-                <thead>
-                <tr>
-                    <th><strong>Fecha</strong></th>
-                    <th class="center aligned">Precipitación</th>
-                    <th class="center aligned">Temp maxima</th>
-                    <th class="center aligned">Temp media</th>
-                    <th class="center aligned">Temp minima</th>
-                    <th class="center aligned">Humedad</th>
-                    <th class="center aligned">Brillo solar</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="dato in dataGrap.datos">
-                    <td>[[ dato['fecha'] | ifEmpty: "--" ]]</td>
-                    <td class="center aligned">[[ dato['ppt'] | ifEmpty: "--" ]] mm</td>
-                    <td class="center aligned">[[ dato['temp_max'] | ifEmpty: "--" ]] °C</td>
-                    <td class="center aligned">[[ dato['temp_med'] | ifEmpty: "--" ]] °C</td>
-                    <td class="center aligned">[[ dato['temp_min'] | ifEmpty: "--" ]] °C</td>
-                    <td class="center aligned">[[ dato['hum'] | ifEmpty: "--" ]]%</td>
-                    <td class="center aligned">[[ dato['bs'] | ifEmpty: "--" ]] </td>
-                </tr>
-                </tbody>
-            </table>
-
-        </div>
-
-
     </div>
-
-    <div class="ui divider"></div>
-
-
-</div>
-
 
 {% endblock contenido %}
 
-
 {% block script %}
-<script type="text/javascript" src="{% static 'bower_components/leaflet/dist/leaflet.js' %}"></script>
-<script type="text/javascript" src="{% static 'bower_components/leaflet-icon-pulse/src/L.Icon.Pulse.js' %}"></script>
-<script type="text/javascript" src="{% static 'bower_components/highcharts/highcharts.js' %}"></script>
-<script src="http://code.highcharts.com/stock/highstock.js"></script>
-<script type="text/javascript" src="{% static 'bower_components/highcharts/modules/exporting.js' %}"></script>
-<script type="text/javascript" src="{% static 'bower_components/highcharts/modules/no-data-to-display.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/graficas/highcharts.config.js' %}"></script>
-
-<script src="{% static 'js/graficas/dashboard/estacion/clima_month.js' %}"></script>
-
-<script type="text/javascript" src="{% static 'angularjs/services/EstacionesService.js' %}"></script>
-<script type="text/javascript" src="{% static 'angularjs/services/ClimaService.js' %}"></script>
-<script type="text/javascript" src="{% static 'angularjs/controller/dashboard/HistoryMetController.js' %}"></script>
 
 
 
-<script>
-	$(function() {
-		setInterval(function(){ $('#img_estacion').transition('jiggle'); }, 5000);;
-		$('.ui.fluid.search.dropdown').dropdown();
-	});
+    <script type="text/javascript" src="{% static 'bower_components/leaflet/dist/leaflet.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'bower_components/leaflet-icon-pulse/src/L.Icon.Pulse.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bower_components/highcharts/highcharts.js' %}"></script>
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script type="text/javascript" src="{% static 'bower_components/highcharts/modules/exporting.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'bower_components/highcharts/modules/no-data-to-display.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/graficas/highcharts.config.js' %}"></script>
 
-	$('.menu .item').tab();
+    <script src="{% static 'js/graficas/dashboard/estacion/clima_month.js' %}"></script>
 
+    <script type="text/javascript" src="{% static 'angularjs/services/EstacionesService.js' %}"></script>
+    <script type="text/javascript" src="{% static 'angularjs/services/ClimaService.js' %}"></script>
+    <script type="text/javascript" src="{% static 'angularjs/controller/dashboard/HistoryMetController.js' %}"></script>
 
-	/*$('.menu .item').tab({
-		onVisible : function a(name){
-			if (name=='tab_grap_clima') {
+    <script>
+        $(function () {
+            setInterval(function () {
+                $('#img_estacion').transition('jiggle');
+            }, 5000);
+            ;
+            $('.ui.fluid.search.dropdown').dropdown();
+        });
 
-					//REDIMENCIONANDO GRAFICA
-					setTimeout(function(){$('#temperatura').highcharts().reflow();},50);
-					setTimeout(function(){$('#precipitacion').highcharts().reflow();},50);
-					setTimeout(function(){$('#humedad').highcharts().reflow();},50);
-					setTimeout(function(){$('#brillosolar').highcharts().reflow();},50);
-
-			}else if(name=='tab_balance_hidrico'){
-
-			}
-
-		}
-
-	});*/
-
-
+        $('.menu .item').tab();
 
 
+        /*$('.menu .item').tab({
+            onVisible : function a(name){
+                if (name=='tab_grap_clima') {
 
+                        //REDIMENCIONANDO GRAFICA
+                        setTimeout(function(){$('#temperatura').highcharts().reflow();},50);
+                        setTimeout(function(){$('#precipitacion').highcharts().reflow();},50);
+                        setTimeout(function(){$('#humedad').highcharts().reflow();},50);
+                        setTimeout(function(){$('#brillosolar').highcharts().reflow();},50);
 
+                }else if(name=='tab_balance_hidrico'){
 
+                }
 
+            }
 
-
-
-
-
-
-
-
-</script>
+        });*/
+    </script>
 
 {% endblock script %}

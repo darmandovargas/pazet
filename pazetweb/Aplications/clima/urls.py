@@ -4,7 +4,6 @@ from .import views
 
 
 #BASE = 'clima/'
-
 urlpatterns = [
 
 url(r'index$', views.index, name='index'),
@@ -27,6 +26,9 @@ url(r'clima_day_download_csv$', views.clima_day_download_csv, name='clima_day_do
 url(r'emisiones_with_escenario_json$', views.emisiones_with_escenario_json, name='emisiones_with_escenario_json'),
 
 # (GRAFICA)
+url(r'clima_year_estn_year_json$', views.clima_year_estn_year_json, name='clima_year_estn_year_json'),
+
+# (GRAFICA)
 url(r'clima_month_estn_year_json$', views.clima_month_estn_year_json, name='clima_month_estn_year_json'),
 
 
@@ -42,3 +44,4 @@ url(r'clima_day_estn_year_json$', views.clima_day_estn_year_json, name='clima_da
 #url(r'all_stations_geojson$', views.all_stations_geojson, name='all_stations_geojson'),
 
 ]
+
