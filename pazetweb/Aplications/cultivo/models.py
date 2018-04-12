@@ -4,6 +4,7 @@ from django.contrib.gis.db import models as Geomodels
 from Aplications.orgtecol.models import Municipio
 from django.db import models
 
+TIPO_CULTIVO_CHOICES=(('Herbáseos Frutas y Granos','Herbáseos Frutas y Granos'),('Herbáseos Vegetales de Hoja','Herbáseos Vegetales de Hoja'),('Herbáseos Raices y Tuberculos','Herbáseos Raices y Tuberculos'),('Herbáseos Cultivos Forrajeros','Herbáseos Cultivos Forrajeros'),('Arbóreos','Arbóreos'),)
 # Create your models here.
 class Cultivo(models.Model):
     cul_id = models.BigAutoField(primary_key=True)
@@ -11,7 +12,7 @@ class Cultivo(models.Model):
     cul_variedad = models.CharField("Tipo de Cultivo", blank=True, null=True, max_length=50)
     cul_nombre_cientifico = models.CharField("Tipo de Cultivo", blank=True, null=True, max_length=50)
     cul_nombre_bernaculo = models.CharField("Tipo de Cultivo", blank=True, null=True, max_length=50)
-    tipo_cultivo=models.CharField("",max_length=25,null=False)
+    cul_tipo_cultivo=models.CharField("",max_length=100,null=False,default="",choices=TIPO_CULTIVO_CHOICES)
     cul_created = models.DateTimeField("Registro", auto_now_add=True)
     cul_updated = models.DateTimeField("Actualización", auto_now=True)
 
