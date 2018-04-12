@@ -182,7 +182,20 @@ def clima_year_estn_year_json(request):
                     WHERE estn_codigo='%s' and cmen_year >= %s and cmen_year <= %s
                     GROUP BY cmen_year''' % (codigo_estacion, yearini, yearfin)
     else:
-        query = '''SELECT * FROM general.clima_mensual WHERE estn_codigo='%s' and cmen_year = %s ORDER BY cmen_year, cmen_month''' % (codigo_estacion, yearini)
+        #query = '''SELECT * FROM general.clima_mensual WHERE estn_codigo='%s' and cmen_year = %s ORDER BY cmen_year, cmen_month''' % (codigo_estacion, yearini)
+        query = '''SELECT general.clima_mensual.*, 
+                               (select SUM(coalesce(cmen_precipitacion, 0)) from general.clima_mensual where estn_codigo='%s' and cmen_year = %s ) AS cmen_precipitacion_anual, 
+                               (select SUM(coalesce(cmen_brillo_solar, 0)) from general.clima_mensual where estn_codigo='%s' and cmen_year = %s  ) AS cmen_brillo_solar_anual, 
+                               (select ROUND(AVG(coalesce(cmen_temp_media, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year = %s  ) AS cmen_temp_media_avg_anual,  
+                               (select ROUND(AVG(coalesce(cmen_temp_min, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year = %s  ) AS cmen_temp_min_avg_anual, 
+                               (select ROUND(AVG(coalesce(cmen_temp_max, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year = %s  ) AS cmen_temp_max_avg_anual, 
+                               (select ROUND(AVG(coalesce(cmen_humedad_relativa, 0))::numeric, 2)::float from general.clima_mensual where estn_codigo='%s' and cmen_year = %s ) as cmen_humedad_relativa_avg_anual   
+                           FROM general.clima_mensual  
+                           WHERE estn_codigo='%s' and cmen_year = %s  
+                           ORDER BY cmen_year, cmen_month 
+                           LIMIT 1''' % ( codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini, codigo_estacion, yearini)
+
+    print query
 
     cursor = connection.cursor()
     cursor.execute(query)
@@ -194,38 +207,22 @@ def clima_year_estn_year_json(request):
     for clima in climas:
         row = dict(zip(columns, clima))
 
-        if intervalo == "1":
-            fdate = str(row['cmen_year'])
-            fecha.append(fdate)
-            ppt.append(row['cmen_precipitacion_anual'] or None)
-            temp_max.append(row['cmen_temp_max_avg_anual'] or None)
-            temp_med.append(row['cmen_temp_media_avg_anual'] or None)
-            temp_min.append(row['cmen_temp_min_avg_anual'] or None)
-            hum.append(row['cmen_humedad_relativa_avg_anual'] or None)
-            bs.append(row['cmen_brillo_solar_anual'] or None)
+        #if intervalo == "1":
+        fdate = str(row['cmen_year'])
+        fecha.append(fdate)
+        ppt.append(row['cmen_precipitacion_anual'] or None)
+        temp_max.append(row['cmen_temp_max_avg_anual'] or None)
+        temp_med.append(row['cmen_temp_media_avg_anual'] or None)
+        temp_min.append(row['cmen_temp_min_avg_anual'] or None)
+        hum.append(row['cmen_humedad_relativa_avg_anual'] or None)
+        bs.append(row['cmen_brillo_solar_anual'] or None)
 
-            datos.append({
-                'fecha': fdate, 'ppt': row['cmen_precipitacion_anual'], 'temp_max': row['cmen_temp_max_avg_anual'],
-                'temp_med': row['cmen_temp_media_avg_anual'], 'temp_min': row['cmen_temp_min_avg_anual'],
-                'hum': row['cmen_humedad_relativa_avg_anual'],
-                'bs': row['cmen_brillo_solar_anual']
-            })
-        else:
-            fdate = str(row['cmen_year']) + ' - ' + str(row['cmen_month'])
-            fecha.append(fdate)
-            ppt.append(row['cmen_precipitacion'] or None)
-            temp_max.append(row['cmen_temp_max'] or None)
-            temp_med.append(row['cmen_temp_media'] or None)
-            temp_min.append(row['cmen_temp_min'] or None)
-            hum.append(row['cmen_humedad_relativa'] or None)
-            bs.append(row['cmen_brillo_solar'] or None)
-
-            datos.append({
-                'fecha': fdate, 'ppt': row['cmen_precipitacion'], 'temp_max': row['cmen_temp_max'],
-                'temp_med': row['cmen_temp_media'], 'temp_min': row['cmen_temp_min'],
-                'hum': row['cmen_humedad_relativa'],
-                'bs': row['cmen_brillo_solar']
-            })
+        datos.append({
+            'fecha': fdate, 'ppt': row['cmen_precipitacion_anual'], 'temp_max': row['cmen_temp_max_avg_anual'],
+            'temp_med': row['cmen_temp_media_avg_anual'], 'temp_min': row['cmen_temp_min_avg_anual'],
+            'hum': row['cmen_humedad_relativa_avg_anual'],
+            'bs': row['cmen_brillo_solar_anual']
+        })
 
     data = {
         'fecha': fecha, 'ppt': ppt, 'temp_med':temp_med, 'temp_max':temp_max, 'temp_min':temp_min, 'hum':hum, 'bs':bs,
