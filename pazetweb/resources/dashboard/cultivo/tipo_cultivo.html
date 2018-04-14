@@ -1,0 +1,85 @@
+{% extends "layouts/layout_dashboard.html" %}
+{% load staticfiles %}
+
+
+{% block css %}
+
+{% endblock css %}
+
+{% block contenido %}
+<div class="ui container margintop">
+
+    <div class="ui segment">
+
+
+        <h2 class="ui header dividing">
+            <img src="{% static 'images/dashboard/cultivos/cultivo.png' %}" class="ui image">
+            <div class="content">
+                Cultivo ( {{tipo}} )
+                <div class="sub header">
+                    <i>Información cultivo {{tipo}}</i>
+                </div>
+            </div>
+        </h2>
+
+
+        <div class="ui clearing divider"></div>
+
+ <table class="ui very basic compact celled selectable table">
+            <thead>
+            <tr>
+                <th colspan="11">
+                    <div class="ui fluid mini icon input">
+                        <input type="text" ng-model="search" placeholder="Filtrar resultados">
+                        <i class="search icon"></i>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Variedad</th>
+                <th>Nombre Cientifico</th>
+                <th>Nombre Bernaculo</th>
+                <th class="center aligned">
+                    <button class="ui icon mini orange button" ng-click="allEstacion()"
+                            data-tooltip="Agregar Todas" data-position="right center" data-inverted="">Todos
+                    </button>
+                </th>
+            </tr>
+            </thead>
+            {% if cultivo %}
+                {% for tipo in cultivo %}
+                <tbody>
+
+                <tr>
+                    <td>[[$index+1]]</td>
+                    <td>{{tipo.cul_nombre}}</td>
+                    <td>{{tipo.cul_variedad}}</td>
+                    <td>{{tipo.cul_nombre_cientifico}}</td>
+                    <td>{{tipo.cul_nombre_bernaculo}}</td>
+                    <td class="selectable center aligned" data-tooltip="Seleccionar estación"
+                    data-position="top center" data-inverted="">
+
+                        <div ng-click="addEstacion(estacion)">
+                            <i class="plus square outline icon green"></i>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+            {% endfor %}
+            {% endif %}
+        </table>
+
+      
+    </div>
+
+</div>
+
+{% endblock contenido %}
+
+
+{% block script %}
+
+{% endblock script %}
