@@ -7,8 +7,6 @@ from django.db.models import Q
 class EmailOrUsernameModelBackend(ModelBackend):
 
     def authenticate(self, username=None, password=None):
-        print "username:"+username+" password:"+password
-        #exit()
         auth_type = settings.AUTH_AUTHENTICATION_TYPE
         if auth_type == 'username':
             return authenticate(username, password)
