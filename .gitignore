@@ -8,3 +8,5 @@ pazetweb/App/settings\.py
 *.pyc
 
 virtualenv/
+
+pazetweb/upload_clima_diario\.log
