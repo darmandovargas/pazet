@@ -5,7 +5,7 @@ from Aplications.orgtecol.models import Municipio
 #from django.db.models.deletion import PROTECT
 from django.db import models
 
-# Create your models here.
+# Creación de tablas
 class Cultivo(models.Model):
     cul_id = models.BigAutoField(primary_key=True)
     cul_nombre = models.CharField("Tipo de Cultivo", max_length=50)
