@@ -10,5 +10,3 @@ virtualenv/
 *.pyc
 
 pazetweb/upload_clima_diario\.log
-
-pazetweb/upload_clima_diario\.log
