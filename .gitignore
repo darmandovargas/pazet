@@ -5,8 +5,8 @@ pazetweb/env/
 
 pazetweb/App/settings\.py
 
-*.pyc
-
 virtualenv/
+
+*.pyc
 
 pazetweb/upload_clima_diario\.log
