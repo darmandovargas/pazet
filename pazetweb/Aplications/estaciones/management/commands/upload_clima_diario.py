@@ -65,6 +65,10 @@ class Command(BaseCommand):
                 'tmin2':'/Users/Diego/Documents/Clientes/Corpoica/Datos_diarios_Base_IDEAM_Jul_20162017/entrega final/DATOS_FINAL/tmin/Grupo2/DATOS'
         };
 
+        #listdir(rutaVariable)
+
+        #quit()
+
         logging.basicConfig(filename=options['ruta']+'.log', level=logging.DEBUG)
 
         existPath = rutasPosibles.get(options['ruta'], -1)
@@ -72,19 +76,7 @@ class Command(BaseCommand):
         if existPath != -1:
 
             ruta = [existPath]
-            #print "ruta:"
-            #print ruta
-
-            #for rutaVariable in ruta:
-            #    print rutaVariable;
-            #    for file in listdir(rutaVariable):
-            #         print file
-                    #print("[{0}]".format(', '.join(map(str, rutaVariable))))
-
             #quit()
-
-
-
 
             # Definición de variables para obtener el campo a editar dependiendo del nombre de la carpeta que lo contenga
             variables = {
@@ -155,14 +147,14 @@ class Command(BaseCommand):
                                         # Obtengo el valor de la variable dinámica que necesitamos de clima
                                         currentVariableValue = str(getattr(currentClima, update_variable))
                                         # Si el valor actual en la base de datos es igual al que se va a actualizar entonces no procesa el registro y guarda el log
-                                        if currentVariableValue == update_value:
+                                        if float(currentVariableValue) == float(update_value):
                                             notUpdatedCounter += 1
                                             self.stdout.write(self.style.ERROR('SAME VALUE: {}) {} - {} - {} - {} - {}'.format(notUpdatedCounter, estacionNumber, fecha, update_variable, update_value, grupo)))
                                             logging.info(self.style.ERROR('SAME VALUE: {}) {} - {} - {} - {} - {}'.format(notUpdatedCounter, estacionNumber, fecha, update_variable, update_value, grupo)))
                                         else:
                                             updatedCounter += 1
                                             self.stdout.write(self.style.SUCCESS('UPDATED: {}) {} - {} - {} - Old Value {} - New Value {} - {}'.format(updatedCounter, estacionNumber, fecha, update_variable, currentVariableValue, update_value, grupo)))
-                                            logging.info(self.style.SUCCESS('UPDATED: {}) {} - {} - {} - {} - {}'.format(updatedCounter, estacionNumber, fecha, update_variable, update_value, grupo)))
+                                            logging.info(self.style.SUCCESS('UPDATED: {}) {} - {} - {} - Old Value {} - New Value {} - {}'.format(updatedCounter, estacionNumber, fecha, update_variable, currentVariableValue, update_value, grupo)))
                                             climaDiario = ClimaDiario.objects.update_or_create(estn=estacion, cdia_fecha_reporte=fecha, defaults={update_variable: update_value, 'cdia_calidad': grupo})
                                     except ObjectDoesNotExist:
                                         currentClima = ""
