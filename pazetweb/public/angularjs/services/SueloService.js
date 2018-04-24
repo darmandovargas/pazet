@@ -41,6 +41,27 @@ app.service('Suelo',['$http', '$q', function ($http, $q){
         return promise;
     };
 
+    // OBTIENE LAS MUESTRAS DE SUELO DE EL ZULIA
+    // @author Diego Vargas
+    this.get_muestras_elzulia_geojson = function (){
+
+        var defered = $q.defer();
+        var promise = defered.promise;
+
+        $http({
+            method: 'GET',
+            url: '/suelo/all_muestras_geojson',
+            cache: true
+        }).then(function (success){
+            defered.resolve(success.data);
+            //console.log(success.data);
+        },function (error){
+            defered.reject(error)
+        });
+
+        return promise;
+    };
+
     //OPTIENE LAS MUESTRA DE UN PERFIL
     this.muestras_perfil_with_code_json = function (codigo){
 
