@@ -1,3 +1,4 @@
+pazetweb/public/bower_components/*
 
 \.idea/
 
@@ -10,3 +11,5 @@ virtualenv/
 *.pyc
 
 pazetweb/upload_clima_diario\.log
+
+pazetweb/*\.log

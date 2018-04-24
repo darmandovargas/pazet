@@ -12,3 +12,7 @@ def index(request):
 @login_required
 def mapainteractivo(request):
 	return render(request, 'dashboard/mapainteractivo.html', {})
+
+@login_required
+def getgeojson(request):
+	return render(request, 'dashboard/point.geo.json', {})

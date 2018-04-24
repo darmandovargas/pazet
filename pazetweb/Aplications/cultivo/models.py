@@ -5,7 +5,7 @@ from Aplications.orgtecol.models import Municipio
 from django.db import models
 
 TIPO_CULTIVO_CHOICES=(('Herbáseos Frutas y Granos','Herbáseos Frutas y Granos'),('Herbáseos Vegetales de Hoja','Herbáseos Vegetales de Hoja'),('Herbáseos Raices y Tuberculos','Herbáseos Raices y Tuberculos'),('Herbáseos Cultivos Forrajeros','Herbáseos Cultivos Forrajeros'),('Arbóreos','Arbóreos'),)
-# Create your models here.
+# Entidades con base en el diagrama entidad relación de éste link https://creately.com/diagram/jf8m2e4f1/U2DcDvIRWlTIsZRmVhb0niDZBIg%3D
 class Cultivo(models.Model):
     cul_id = models.BigAutoField(primary_key=True)
     cul_nombre = models.CharField("Tipo de Cultivo", max_length=50)
@@ -15,6 +15,7 @@ class Cultivo(models.Model):
     cul_tipo_cultivo=models.CharField("",max_length=100,null=False,default="",choices=TIPO_CULTIVO_CHOICES)
     cul_created = models.DateTimeField("Registro", auto_now_add=True)
     cul_updated = models.DateTimeField("Actualización", auto_now=True)
+    municipios = models.ManyToManyField(Municipio, through="RegionCultivo", related_name="cultivos")
 
     def __unicode__(self):
         return '{}'.format(self.cul_nombre)
@@ -22,26 +23,24 @@ class Cultivo(models.Model):
     class Meta:
         managed = True
         db_table = 'cultivo'
-        verbose_name = 'Cultivo_'
+        verbose_name = 'Cultivo'
         verbose_name_plural = 'Cultivos'
 
+class RegionCultivo(models.Model):
+    regcul_id = models.BigAutoField(primary_key=True)
+    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo", related_name='regioncultivo')
+    mun = models.ForeignKey(Municipio, verbose_name="Municipio", related_name='regioncultivo')
+    cul_created = models.DateTimeField("Registro", auto_now_add=True)
+    cul_updated = models.DateTimeField("Actualización", auto_now=True)
 
-#class TipoCultivo(models.Model):
-#    tipcul_id = models.BigAutoField(primary_key=True)
-    # Agregado sin _id ya que por defecto django la pone en la migración
-#    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
-#    tipcul_nombre = models.CharField("Nombre de Cultivo", unique=True, max_length=50)
-#    tipcul_created = models.DateTimeField("Registro", auto_now_add=True)
-#    tipcul_updated = models.DateTimeField("Actualización", auto_now=True)
+    def __unicode__(self):
+        return '{}'.format(self.regcul_id)
 
-    #def __unicode__(self):
-#        return '{}'.format(self.tipcul_nombre)
-
-#    class Meta:
-#        managed = True
-#        db_table = 'cul_tipo_cultivo'
-#        verbose_name = 'Tipo de Cultivo'
-#        verbose_name_plural = 'Tipos de Cultivos'
+    class Meta:
+        managed = True
+        db_table = 'cul_region_cultivo'
+        verbose_name = 'Región Cultivo'
+        verbose_name_plural = 'Regiones Cultivo'
 
 class NivelFreatico(models.Model):
     nivfre_id = models.BigAutoField(primary_key=True)
@@ -80,7 +79,7 @@ class FechaSiembra(models.Model):
 
 class AqFisioConserva(models.Model):
     aqfisoconser_id = models.BigAutoField(primary_key=True)
-    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    cul_id = models.OneToOneField(Cultivo)
     aqfisioconser_Temp_base = models.FloatField("Temperatura Mínima", blank=True, null=True)
     aqfisioconser_Temp_corte = models.FloatField("Temperatura de Corte", blank=True, null=True)
     aqfisioconser_cs = models.FloatField("Covertura de Suelo", blank=True, null=True)
@@ -130,6 +129,7 @@ class AqFisioConserva(models.Model):
 class AqFisioNoConser(models.Model):
     aqfisonoconser_id = models.BigAutoField(primary_key=True)
     cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    mun_id = models.OneToOneField(Municipio)
     aqfisionoconser_plantasxha = models.FloatField("Densidad de Siembra", blank=True, null=True)
     aqfisionoconser_t0 = models.SmallIntegerField("Tiempo Transcurrido")
     aqfisionoconser_cdx = models.SmallIntegerField("Máxima cobertura")
@@ -161,7 +161,7 @@ class AqFisioNoConser(models.Model):
 
 class ReqNutricion(models.Model):
     reqnut_id = models.BigAutoField(primary_key=True)
-    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    cul_id = models.OneToOneField(Cultivo)
     reqnut_ph_min = models.FloatField("Ph Mínimo", blank=True, null=True)
     reqnut_ph_max = models.FloatField("Ph Máximo", blank=True, null=True)
     reqnut_ce_min = models.FloatField("Conductividad Eléctrica Mínima", blank=True, null=True)
@@ -212,7 +212,7 @@ class ReqNutricion(models.Model):
 
 class ReqFisico(models.Model):
     reqfis_id = models.BigAutoField(primary_key=True)
-    cul = models.ForeignKey(Cultivo, verbose_name="Cultivo")
+    cul_id = models.OneToOneField(Cultivo)
     reqfis_drenaje_opt = models.CharField("Clase de Drenaje Óptimo", blank=True, null=True, max_length=15)
     reqfis_drenaje_mod = models.CharField("Clase de Drenaje Moderado", blank=True, null=True, max_length=15)
     reqfis_drenaje_rest = models.CharField("Clase de Drenaje Restrictivo", blank=True, null=True, max_length=15)
@@ -281,4 +281,3 @@ class EventoRiego(models.Model):
         db_table = 'cul_evento_riego'
         verbose_name = 'Evento Riego'
         verbose_name_plural = 'Eventos Riegos'
-
