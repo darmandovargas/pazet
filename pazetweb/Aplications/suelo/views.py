@@ -40,6 +40,9 @@ def thiessen(request):
 
     return render(request, 'dashboard/suelo/thiessen.html', {})
 
+@login_required
+def interpolacion(request):
+    return render(request, 'dashboard/suelo/interpolacion.html',{})
 
 # ---------------------------------------------------------------------------------------
 # ----------------------------------- JSON ----------------------------------------------
@@ -73,7 +76,8 @@ def muestras_perfil_with_code_json(request):
     cursor.execute(query, [codigo])
     columns = [x.name for x in cursor.description]
     muestras = cursor.fetchall()
-
+    print columns
+    print muestras
     json_data = json.dumps({'perfil': data, 'muestras': [dict(zip(columns, muestra)) for muestra in muestras]})
     return HttpResponse(json_data, content_type="application/json")
 
@@ -87,7 +91,9 @@ def muestra_with_muesid_json(request):
     cursor.execute(query, [muesid])
     columns = [x.name for x in cursor.description]
     muestra = cursor.fetchone()
-
+    print columns
+    print "-----"
+    print muestra
     json_data = json.dumps({'muestra': dict(zip(columns, muestra))})
     return HttpResponse(json_data, content_type="application/json")
 

@@ -9,6 +9,7 @@ urlpatterns = [
 url(r'index$', views.index, name='index'),
 
 url(r'thiessen$', views.thiessen, name='thiessen'),
+url(r'interpolacion$',views.interpolacion, name='interpolacion'),
 
 
 # ---------------------------------------------------------------------------------------
