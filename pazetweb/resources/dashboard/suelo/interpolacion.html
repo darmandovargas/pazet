@@ -1,0 +1,2315 @@
+{% extends "layouts/layout_dashboard.html" %}
+#{% load staticfiles %}
+
+
+{% block css %}
+<!-- LEAFLET -->
+<link rel="stylesheet" href="{% static 'bower_components/leaflet/dist/leaflet.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet.locatecontrol/dist/L.Control.Locate.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet.markercluster/dist/MarkerCluster.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/Leaflet.label/dist/leaflet.label.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet-sidebar/src/L.Control.Sidebar.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet.fullscreen/Control.FullScreen.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/Leaflet.EasyButton/src/easy-button.css' %}"/>
+<link rel="stylesheet" href="{% static 'plugins/Leaflet_draw/leaflet-draw/dist/leaflet.draw.css' %}"/>
+<link rel="stylesheet" href="{% static 'plugins/Leaflet_draw/leaflet.measurecontrol.css' %}"/>
+<link rel="stylesheet" href="{% static 'plugins/Leaflet_StyledLayerControl/css/styledLayerControl.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet-search/src/leaflet-search.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet-loader/leaflet-loader.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet-panel-layers/dist/leaflet-panel-layers.src.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet-providers/css/gh-fork-ribbon.css' %}"/>
+<link rel="stylesheet" href="{% static 'bower_components/leaflet-minimap/dist/Control.MiniMap.min.css' %}"/>
+
+
+<style>
+#map{
+  width: auto;
+  height: 100%;
+  /*min-height: 500px;*/
+  position: relative;
+  box-shadow: 10px 10px 10px #0B4600;
+}
+    .leaflet-panel-layers{
+		width:250px !Important;
+	}
+	.leaflet-panel-layers-item{
+		height:25px !Important;
+		line-height:9px !Important;
+	}
+	.leaflet-panel-layers-group.collapsible:not(.expanded){
+		height:25px !Important;
+	}
+	.leaflet-panel-layers-overlays span{
+		overflow:visible !Important;
+	}
+
+
+
+
+</style>
+{% endblock css %}
+
+
+{% block menu %}
+<!-- <a href="#" class="item active green">
+     <i class="map outline icon"></i> Mapa interactivo
+ </a>-->
+{% endblock %}
+
+
+{% block contenido %}
+
+<div class="ui fluid container" style="margin-top:50px;" ng-controller="MapaInteractivoController">
+
+
+    <div id='map'></div>
+
+
+    <!--*******************************************************************************************************-->
+    <!--************************************ MODAL CLICK ESTACION**********************************************-->
+    <!--*******************************************************************************************************-->
+    <div class="ui modal" id="modal_estaciones">
+        <i class="close icon"></i>
+        <div class="content">
+
+            <div class="ui pointing secondary menu" id="tab_satisfacao">
+                <a class="active item" data-tab="tab_est_info">Información</a>
+            </div>
+
+
+            <div class="ui bottom attached active tab" data-tab="tab_est_info">
+                <div class="ui grid">
+                    <div class="four wide column">
+                        <div class="ui medium image">
+                            <img class="ui medium centered image" src="{% static 'images/estacionsombra.png' %}">
+                        </div>
+                    </div>
+
+                    <div class="twelve wide column">
+
+                        <div class="ui header dividing">
+                            [[estacion.estn_nombre]] ([[estacion.estn_codigo]])
+                        </div>
+
+                        <div class="ui icon message">
+                            <i class="marker icon"></i>
+                            <div class="content">
+                                <div class="header">
+                                    [[estacion.depto_nombre]]([[estacion.depto_iso]]),
+                                    Municipio: [[estacion.mun_nombre]]
+                                </div>
+                                <p>
+                                    <small>
+                                        [[estacion.reg_nombre]] [ [[estacion.estn_lat]], [[estacion.estn_lng]] ]
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+
+                        <table class="ui celled striped compact table">
+                            <tbody>
+                            <tr>
+                                <td class="collapsing"><strong>PROPIETARIO:</strong></td>
+                                <td>
+                                    <abbr title="[[estacion.entds_nombre]]">[[estacion.entds_siglas]]</abbr>
+                                </td>
+                                <td><strong>CORRIENTE:</strong></td>
+                                <td>[[estacion.estn_corriente]]</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TIPO:</strong></td>
+                                <td>[[estacion.tipo_nombre]] ([[estacion.tipo_siglas]])</td>
+                                <td><strong>CLASE:</strong></td>
+                                <td>[[estacion.clase_nombre]] ([[estacion.clase_siglas]])</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CATEGORIA:</strong></td>
+                                <td colspan="3">[[estacion.cat_nombre]] ([[estacion.cat_siglas]])</td>
+                            </tr>
+                            <tr>
+                                <td><strong>INSTALACIÓN:</strong></td>
+                                <td>[[estacion.estn_fecha_instalacion]]</td>
+                                <td><strong>SUSPENSIÓN:</strong></td>
+                                <td>[[estacion.estn_fecha_suspension]]</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="actions">
+            <div class="ui buttons">
+                <a ng-href="[[LinkData]]" class="ui blue button icon">
+                    <i class="database icon"></i> Consultar información
+                </a>
+                <div class="or"></div>
+                <div class="ui red deny button icon">
+                    Cerrar <i class="close icon"></i>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!--*******************************************************************************************************-->
+
+
+    <!--*******************************************************************************************************-->
+    <!--*************************************** MODAL CLICK PERFILES ******************************************-->
+    <!--*******************************************************************************************************-->
+    <div class="ui modal" id="modal_suelos">
+        <i class="close icon"></i>
+        <div class="content">
+
+            <div class="ui pointing secondary menu" id="tab_suelos">
+                <a class="active item" data-tab="tab_suelo_info">Información</a>
+            </div>
+
+            <div class="ui bottom attached active tab" data-tab="tab_suelo_info">
+                <div class="ui grid">
+                    <div class="four wide column">
+                        <div class="ui medium image dividing">
+                            <img class="ui small centered image" src="{% static 'images/icon_suelo.png' %}">
+                        </div>
+
+                        <div class="ui celled mini list">
+                            <div class="item">
+                                <div class="right floated content">
+                                    [[perfil.perfil != null ? perfil.perfil : '--']]
+                                </div>
+                                <div class="content">
+                                    <div class="header">PERFIL</div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="right floated content">
+                                    [[perfil.publicacion != null ? perfil.publicacion : '--']]
+                                </div>
+                                <div class="content">
+                                    <div class="header">AÑO DE PUBLICACION</div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="right floated content">
+                                    [[perfil.niveldetalle != null ? perfil.niveldetalle : '--']]
+                                </div>
+                                <div class="content">
+                                    <div class="header">NIVEL</div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="right floated content">
+                                    [[perfil.escala != null ? perfil.escala: '--']]
+                                </div>
+                                <div class="content">
+                                    <div class="header">ESCALA</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="twelve wide column">
+
+                        <div class="ui header dividing">
+                            [[perfil.estudio]]
+                        </div>
+
+
+                        <div id="accordeon_suelo" class="ui styled accordion">
+
+                            <div ng-repeat="muestra in muestras">
+                                <div class="title[[$first ? ' active' : '']]">
+                                    <i class="dropdown icon"></i>
+                                    <div class="ui celled horizontal list">
+                                        <div class="item">
+                                            Horizonte: [[muestra.horz_nombre | ifEmpty: "--"]]
+                                        </div>
+                                        <div class="item">
+                                            Profundidad inicio: [[muestra.mues_prof_inicio | ifEmpty: "--" ]] Cm
+                                        </div>
+                                        <div class="item">
+                                            Profundidad final: [[muestra.mues_prof_final | ifEmpty: "--" ]] Cm
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content[[$first ? ' active' : '']]"
+                                     style="max-height:200px;overflow: auto;">
+
+
+                                    <!--*****************************************************************************-->
+                                    <!--********************** PROPIEDADES FISICAS **********************************-->
+                                    <!--*****************************************************************************-->
+                                    <div class="ui tiny header">
+                                        <i class="lab brown icon"></i>Propiedades fisicas
+                                    </div>
+
+                                    <div class="ui three column grid">
+                                        <div class="column">
+
+                                            <div class="ui celled mini list">
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_arena | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">Arena:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_limo | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">Limo:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_arcilla | ifEmpty: "--" ]]
+                                                    </div>
+                                                    <div class="header">Arcilla:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_textura | ifEmpty: "--" ]]
+                                                    </div>
+                                                    <div class="header">Textura:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_densidad_real | ifEmpty: "--" ]]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pfis_interp_dreal | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Densidad Real"
+                                                           data-position="right center">D. Real:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_densidad_aparante | ifEmpty: "--"]]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pfis_interp_daparente | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Densidad Aparente"
+                                                           data-position="right center">D. Aparente:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_porosidad_total | ifEmpty: "--"]]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pfis_interp_pdad_total | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">Porosidad Total:</div>
+                                                </div>
+
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_dmp | ifEmpty: "--"]] mm
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pfis_interp_dmp | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Diametro medio ponderado"
+                                                           data-position="right center">DMP:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_w_01bar_cc | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Capacidad de campo (%)(cm^3 cm^3)"
+                                                           data-position="right center">Ret. Humd. 0.1 bar:</a>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_w_03bar | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Retención de humedad a 0.3 bar (%)(cm^3 cm^3)"
+                                                           data-position="right center">Ret. Humd. 0.3 bar:</a>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+                                        <div class="column">
+
+                                            <div class="ui celled mini list">
+
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_w_1bar | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Retención de humedad a 1 bar (%)(cm^3 cm^3)"
+                                                           data-position="right center">Ret. Humd. 1 bar:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_w_5bar | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Retención de humedad a 5 bar (%)(cm^3 cm^3)"
+                                                           data-position="right center">Ret. Humd. 5 bar:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_w_10bar | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Retención de humedad a 10 bar (%)(cm^3 cm^3)"
+                                                           data-position="right center">Ret. Humd. 10 bar:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_w_15bar_pmp | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Punto de marchites permanente (%)(cm^3 cm^3)"
+                                                           data-position="right center">Ret. Humd. 15bar:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[ muestra.pfis_w_sat_g | ifEmpty: "--" ]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Saturación gravimetrica"
+                                                           data-position="right center">Saturación G:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[ muestra.pfis_w_sat_v | ifEmpty: "--" ]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Saturación volumetrica"
+                                                           data-position="right center">Saturación V:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_macroporos | ifEmpty: "--"]]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pfis_interp_macroporos | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">Macroporos:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_mesoporos | ifEmpty: "--"]]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pfis_interp_mesoporos | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">Mesoporos:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_microporos | ifEmpty: "--"]]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pfis_interp_microporos | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">Microporos:</div>
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="column">
+
+                                            <div class="ui celled mini list">
+
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_agua_aprovechable_gra | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">Agua disp. (Gra)</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_agua_aprovechable | ifEmpty: "--"]]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pfis_interp_aa | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">Agua disp. (Vol)</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_adt_mm | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Agua disponible total (Milimetros)"
+                                                           data-position="left center">Adt (mm):</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_d_4mm | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Agregados mayores a 4mm"
+                                                           data-position="left center">Agregados > 4mm:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_d_2mm | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Agregados mayores a 2mm"
+                                                           data-position="left center">Agregados > 2mm:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_d_1mm | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Agregados mayores a 1mm"
+                                                           data-position="left center">Agregados > 1mm:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_d_05mm | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Agregados mayores a 0.5mm"
+                                                           data-position="left center">Agregados > 0.5mm:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_d_may_025mm | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Agregados mayores a 0.25mm"
+                                                           data-position="left center">Agregados > 0.25mm:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_d_men_025mm | ifEmpty: "--"]]
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Agregados menores a 0.25mm"
+                                                           data-position="left center">Agregados < 0.25mm:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pfis_infil_basica | ifEmpty: "--"]]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pfis_interp_infil_basica | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">nfiltración basica:</div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!--*****************************************************************************-->
+                                    <!--******************** PROPIEDADES QUIMICAS MAYORES ***************************-->
+                                    <!--*****************************************************************************-->
+                                    <div class="ui tiny header">
+                                        <i class="lab brown icon"></i>Propiedades Quimicas Mayores
+                                    </div>
+
+                                    <div class="ui three column grid">
+                                        <div class="column">
+
+                                            <div class="ui celled mini list">
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_ph | ifEmpty: "--" ]]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_ph | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">PH:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_co | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_co | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">Carbono organico:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_mo | ifEmpty: '--']]
+                                                    </div>
+                                                    <div class="header">Materia organica:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_acidez | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_acidez | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">(AlH) Acidez:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_aluminio_inter | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_aluminio_inter | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Aluminio intercambiable (cmol kg^-1)"
+                                                           data-position="right center">(Al) Aluminio I:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_calcio_inter | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_calcio_inter | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Calcio intercambiable (cmol kg^-1)"
+                                                           data-position="right center">(Ca) Calcio Inter:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_magnesio_inter | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_magnesio_inter | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Magnesio intercambiable (cmol kg^-1)"
+                                                           data-position="right center">(Mg) Magnesio Inter:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_potasio_inter | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_potasio_inter | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Potasio intercambiable (cmol kg^-1)"
+                                                           data-position="right center">(K) Potasio Inter:</a>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+                                        <div class="column">
+
+                                            <div class="ui celled mini list">
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_sodio_inter | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_sodio_inter | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Sodio intercambiable (cmol kg^-1)"
+                                                           data-position="bottom center">(Na) Sodio inter:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_cice | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_cice | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Capacidad de intercambio catiónico efectiva (cmol kg^-1)"
+                                                           data-position="bottom center">CICE:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_conduc_electrica | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_conduc_electrica | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Conductividad electrica (dS m^-1)"
+                                                           data-position="bottom center">(CE)Conduc. Eelc.:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_sat_cal | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_sat_cal | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Saturación de calcio (%)"
+                                                           data-position="bottom center">Sat. Calcio:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_sat_mag | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_sat_mag | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Saturación magnesio (%)"
+                                                           data-position="bottom center">Sat. Magnesio:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_sat_sodio | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_sat_sodio | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Saturación de sodio (%)"
+                                                           data-position="bottom center">Sat. Sodio:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_sat_potasio | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_sat_pot | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Saturación de potasio (%)"
+                                                           data-position="bottom center">Sat. Potasio:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_sat_aluminio | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_sat_aluminio | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Saturación de aluminio (%)"
+                                                           data-position="bottom center">Sat. Aluminio:</a>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="column">
+
+                                            <div class="ui celled mini list">
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_sat_bases | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_sat_bases | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Saturación de bases (%)"
+                                                           data-position="left center">Sat. Bases:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_calcio_magenesio | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_calcio_magnesio | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Relación Calcio - Magnesio"
+                                                           data-position="left center">Cal. - Mag.:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_magnesio_potasio | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_mag_potasio | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Relación Magnesio - Potasio"
+                                                           data-position="left center">Mag. - Pot.:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_calcio_potasio | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_calcio_potasio | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Relación Calcio - Potasio"
+                                                           data-position="left center">Cal - Pot.:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pquim_calcio_magnesio_potasio | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pquim_interp_cal_mag_pot | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Relación Calcio - Magnesio - Potasio"
+                                                           data-position="left center">Cal-Mag-Pot:</a>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!--*****************************************************************************-->
+                                    <!--******************** PROPIEDADES QUIMICAS MENORES ***************************-->
+                                    <!--*****************************************************************************-->
+                                    <div class="ui tiny header">
+                                        <i class="lab brown icon"></i>Propiedades Quimicas Menores
+                                    </div>
+
+                                    <div class="ui three column grid">
+                                        <div class="column">
+
+                                            <div class="ui celled mini list">
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pqmen_fosforo_disp | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pqmen_interp_fosforo_disp | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Fosforo disponible (mg kg^-1)"
+                                                           data-position="right center">(P) Fosforo disp:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pqmen_azufre_disp | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pqmen_interp_azufre_disp | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Azufre disponible (mg kg^-1)"
+                                                           data-position="right center">(S) Azufre disp:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pqmen_hierro_disp | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pqmen_interp_hierro_disp | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Hierro disponible (mg kg^-1)"
+                                                           data-position="right center">(Fe) Hierro disp:</a>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        <div class="column">
+
+                                            <div class="ui celled mini list">
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pqmen_cobre_disp | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pqmen_interp_cobre_disp | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Cobre disponible (mg kg^-1)"
+                                                           data-position="bottom center">(Cu) Cobre disp:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pqmen_magneso_disp | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pqmen_interp_magneso_disp | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Magneso disponible (mg kg^-1)"
+                                                           data-position="bottom center">(Mn) Magneso disp:</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pqmen_zinc_disp | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pqmen_interp_zinc_disp | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Zinc disponible (mg kg^-1)"
+                                                           data-position="bottom center">(Zn) Zinc disp:</a>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="column">
+
+                                            <div class="ui celled mini list">
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pqmen_boro_disp | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pqmen_interp_boro_disp | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Boro disponible (mg kg^-1)"
+                                                           data-position="left center">(B) Boro disp:</a>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!--*****************************************************************************-->
+                                    <!--************* METALES PESADOS, PROPIEDADES BIOLOGICAS ***********************-->
+                                    <!--*****************************************************************************-->
+
+                                    <div class="ui two column grid">
+
+                                        <div class="column">
+
+                                            <div class="ui small header">
+                                                <i class="lab brown icon"></i> Metales pesados
+                                            </div>
+
+                                            <div class="ui celled mini list">
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.smp_cromo_total | ifEmpty: '--']] (ppm)
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.smp_interp_cromo | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">(Cr) Cromo total:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.smp_arsenico_total | ifEmpty: '--']](ppm)
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.smp_interp_arsenico | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">(As) Arsenico total:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.smp_plomo_total | ifEmpty: '--']](ppm)
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.smp_interp_plomo | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">(Pb) Plomo total:</div>
+                                                </div>
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.smp_cadmio_total | ifEmpty: '--']](ppm)
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.smp_interp_cadmio | ifEmpty: '--' ]]"
+                                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">(Cd) Cadmio total:</div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="column">
+
+                                            <div class="ui small header">
+                                                <i class="lab brown icon"></i> Propiedades biológicas
+                                            </div>
+
+                                            <div class="ui celled mini list">
+
+                                                <div class="item">
+                                                    <div class="right floated">
+                                                        [[muestra.pbio_hfm | ifEmpty: '--']]
+                                                        <span data-inverted=""
+                                                              data-tooltip="[[muestra.pbio_interp_hfm | ifEmpty: '--' ]]"
+                                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="header">
+                                                        <a data-inverted=""
+                                                           data-tooltip="Hongos Formadores de Micorrizas: (esporas/g)"
+                                                           data-position="bottom center">HFM:</a>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="actions">
+
+            <!--<button class="ui orange button">Ver mas</button>-->
+            <div class="ui red deny button icon">
+                Cerrar <i class="close icon"></i>
+            </div>
+        </div>
+    </div>
+    <!--*******************************************************************************************************-->
+
+
+    <!--*******************************************************************************************************-->
+    <!--*************************************** MODAL CLICK MUESTRAS ********************************************-->
+    <!--*******************************************************************************************************-->
+    <div class="ui modal" id="modal_muestras">
+        <i class="close icon"></i>
+        <div class="header">ID: [[one_muestra.mues_id]]</div>
+        <div class="content">
+
+            <div class="ui internally celled grid">
+
+                <div class="four wide column">
+                    <div class="ui medium image dividing">
+                        <img class="ui small centered image" src="{% static 'images/icon_muestra.png' %}">
+                    </div>
+
+                    <div class="ui celled mini list">
+
+                        <div class="item">
+                            <div class="right floated content">
+                                [[ one_muestra.mues_prof_inicio | ifEmpty: "--" ]] cm
+                            </div>
+                            <div class="content">
+                                <div class="header">Profundidad inicio:</div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="right floated content">
+                                [[ one_muestra.mues_prof_final | ifEmpty: "--" ]] cm
+                            </div>
+                            <div class="content">
+                                <div class="header">Profundidad final:</div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="right floated content">
+                                [[ one_muestra.mues_lat | ifEmpty: "--" ]], [[ one_muestra.mues_lng | ifEmpty: "--" ]]
+                            </div>
+                            <div class="content">
+                                <div class="header">Coordendas:</div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <div class="right floated content">
+                                [[ one_muestra.mues_descripcion | ifEmpty: "--" ]]
+                            </div>
+                            <div class="content">
+                                <div class="header">Descripción:</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="twelve wide column">
+
+                    <!--*****************************************************************************-->
+                    <!--********************** PROPIEDADES FISICAS **********************************-->
+                    <!--*****************************************************************************-->
+                    <div class="ui tiny header">
+                        <i class="lab brown icon"></i>Propiedades fisicas
+                    </div>
+
+                    <div class="ui three column grid">
+                        <div class="column">
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_arena | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">Arena:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_limo | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">Limo:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_arcilla | ifEmpty: "--" ]]
+                                    </div>
+                                    <div class="header">Arcilla:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_textura | ifEmpty: "--" ]]
+                                    </div>
+                                    <div class="header">Textura:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_densidad_real | ifEmpty: "--" ]]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pfis_interp_dreal | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Densidad Real"
+                                           data-position="right center">D. Real:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_densidad_aparante | ifEmpty: "--"]]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pfis_interp_daparente | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Densidad Aparente"
+                                           data-position="right center">D. Aparente:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_porosidad_total | ifEmpty: "--"]]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pfis_interp_pdad_total | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">Porosidad Total:</div>
+                                </div>
+
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_dmp | ifEmpty: "--"]] mm
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pfis_interp_dmp | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Diametro medio ponderado"
+                                           data-position="right center">DMP:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_w_01bar_cc | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Capacidad de campo (%)(cm^3 cm^3)"
+                                           data-position="right center">Ret. Humd. 0.1bar:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_w_03bar | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Retención de humedad a 0.3 bar (%)(cm^3 cm^3)"
+                                           data-position="right center">Ret. Humd. 0.3 bar:</a>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="column">
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_w_1bar | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Retención de humedad a 1 bar (%)(cm^3 cm^3)"
+                                           data-position="right center">Ret. Humd. 1bar:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_w_5bar | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Retención de humedad a 5 bar (%)(cm^3 cm^3)"
+                                           data-position="right center">Ret. Humd. 5 bar:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_w_10bar | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Retención de humedad a 10 bar (%)(cm^3 cm^3)"
+                                           data-position="right center">Ret. Humd. 10 bar:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_w_15bar_pmp | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Punto de marchites permanente (%)(cm^3 cm^3)"
+                                           data-position="right center">Ret. Humd. 15bar:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[ one_muestra.pfis_w_sat_g | ifEmpty: "--" ]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Saturación gravimetrica"
+                                           data-position="right center">Saturación G:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[ one_muestra.pfis_w_sat_v | ifEmpty: "--" ]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Saturación volumetrica"
+                                           data-position="right center">Saturación V:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_macroporos | ifEmpty: "--"]]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pfis_interp_macroporos | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">Macroporos:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_mesoporos | ifEmpty: "--"]]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pfis_interp_mesoporos | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">Mesoporos:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_microporos | ifEmpty: "--"]]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pfis_interp_microporos | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">Microporos:</div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                        <div class="column">
+
+                            <div class="ui celled mini list">
+
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_agua_aprovechable_gra | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">Agua disp. (Gra)</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_agua_aprovechable | ifEmpty: "--"]]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pfis_interp_aa | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">Agua disp. (Vol)</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_adt_mm | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Agua disponible total (Milimetros)"
+                                           data-position="left center">Adt (mm):</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_d_4mm | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Agregados mayores a 4mm"
+                                           data-position="left center">Agregados > 4mm:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_d_2mm | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Agregados mayores a 2mm"
+                                           data-position="left center">Agregados > 2mm:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_d_1mm | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Agregados mayores a 1mm"
+                                           data-position="left center">Agregados > 1mm:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_d_05mm | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Agregados mayores a 0.5mm"
+                                           data-position="left center">Agregados > 0.5mm:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_d_may_025mm | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Agregados mayores a 0.25mm"
+                                           data-position="left center">Agregados > 0.25mm:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_d_men_025mm | ifEmpty: "--"]]
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Agregados menores a 0.25mm"
+                                           data-position="left center">Agregados < 0.25mm:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pfis_infil_basica | ifEmpty: "--"]]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pfis_interp_infil_basica | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">Infiltración basica:</div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!--*****************************************************************************-->
+                    <!--******************** PROPIEDADES QUIMICAS MAYORES ***************************-->
+                    <!--*****************************************************************************-->
+                    <div class="ui tiny header">
+                        <i class="lab brown icon"></i>Propiedades Quimicas Mayores
+                    </div>
+
+                    <div class="ui three column grid">
+                        <div class="column">
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_ph | ifEmpty: "--" ]]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_ph | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">PH:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_co | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_co | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">Carbono organico:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_mo | ifEmpty: '--']]
+                                    </div>
+                                    <div class="header">Materia organica:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_acidez | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_acidez | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">(AlH) Acidez:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_aluminio_inter | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_aluminio_inter | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Aluminio intercambiable (cmol kg^-1)"
+                                           data-position="right center">(Al) Aluminio I:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_calcio_inter | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_calcio_inter | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Calcio intercambiable (cmol kg^-1)"
+                                           data-position="right center">(Ca) Calcio Inter:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_magnesio_inter | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_magnesio_inter | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Magnesio intercambiable (cmol kg^-1)"
+                                           data-position="right center">(Mg) Magnesio Inter:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_potasio_inter | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_potasio_inter | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Potasio intercambiable (cmol kg^-1)"
+                                           data-position="right center">(K) Potasio Inter:</a>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                        <div class="column">
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_sodio_inter | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_sodio_inter | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Sodio intercambiable (cmol kg^-1)"
+                                           data-position="bottom center">(Na) Sodio inter:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_cice | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_cice | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Capacidad de intercambio catiónico efectiva (cmol kg^-1)"
+                                           data-position="bottom center">CICE:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_conduc_electrica | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_conduc_electrica | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Conductividad electrica (dS m^-1)"
+                                           data-position="bottom center">(CE)Conduc. Eelc.:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_sat_cal | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_sat_cal | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Saturación de calcio (%)"
+                                           data-position="bottom center">Sat. Calcio:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_sat_mag | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_sat_mag | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Saturación magnesio (%)"
+                                           data-position="bottom center">Sat. Magnesio:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_sat_sodio | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_sat_sodio | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Saturación de sodio (%)"
+                                           data-position="bottom center">Sat. Sodio:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_sat_potasio | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_sat_pot | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Saturación de potasio (%)"
+                                           data-position="bottom center">Sat. Potasio:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_sat_aluminio | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_sat_aluminio | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Saturación de aluminio (%)"
+                                           data-position="bottom center">Sat. Aluminio:</a>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                        <div class="column">
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_sat_bases | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_sat_bases | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Saturación de bases (%)"
+                                           data-position="left center">Sat. Bases:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_calcio_magenesio | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_calcio_magnesio | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Relación Calcio - Magnesio"
+                                           data-position="left center">Cal. - Mag.:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_magnesio_potasio | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_mag_potasio | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Relación Magnesio - Potasio"
+                                           data-position="left center">Mag. - Pot.:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_calcio_potasio | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_calcio_potasio | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Relación Calcio - Potasio"
+                                           data-position="left center">Cal - Pot.:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pquim_calcio_magnesio_potasio | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pquim_interp_cal_mag_pot | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Relación Calcio - Magnesio - Potasio"
+                                           data-position="left center">Cal-Mag-Pot:</a>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!--*****************************************************************************-->
+                    <!--******************** PROPIEDADES QUIMICAS MENORES ***************************-->
+                    <!--*****************************************************************************-->
+                    <div class="ui tiny header">
+                        <i class="lab brown icon"></i>Propiedades Quimicas Menores
+                    </div>
+
+                    <div class="ui three column grid">
+                        <div class="column">
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pqmen_fosforo_disp | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pqmen_interp_fosforo_disp | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Fosforo disponible (mg kg^-1)"
+                                           data-position="right center">(P) Fosforo disp:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pqmen_azufre_disp | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pqmen_interp_azufre_disp | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Azufre disponible (mg kg^-1)"
+                                           data-position="right center">(S) Azufre disp:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pqmen_hierro_disp | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pqmen_interp_hierro_disp | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Hierro disponible (mg kg^-1)"
+                                           data-position="right center">(Fe) Hierro disp:</a>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="column">
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pqmen_cobre_disp | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pqmen_interp_cobre_disp | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Cobre disponible (mg kg^-1)"
+                                           data-position="bottom center">(Cu) Cobre disp:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pqmen_magneso_disp | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pqmen_interp_magneso_disp | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Magneso disponible (mg kg^-1)"
+                                           data-position="bottom center">(Mn) Magneso disp:</a>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pqmen_zinc_disp | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pqmen_interp_zinc_disp | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Zinc disponible (mg kg^-1)"
+                                           data-position="bottom center">(Zn) Zinc disp:</a>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="column">
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pqmen_boro_disp | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pqmen_interp_boro_disp | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Boro disponible (mg kg^-1)"
+                                           data-position="left center">(B) Boro disp:</a>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!--*****************************************************************************-->
+                    <!--************* METALES PESADOS, PROPIEDADES BIOLOGICAS ***********************-->
+                    <!--*****************************************************************************-->
+
+                    <div class="ui two column grid">
+
+                        <div class="column">
+
+                            <div class="ui small header">
+                                <i class="lab brown icon"></i> Metales pesados
+                            </div>
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.smp_cromo_total | ifEmpty: '--']] (ppm)
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.smp_interp_cromo | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">(Cr) Cromo total:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.smp_arsenico_total | ifEmpty: '--']](ppm)
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.smp_interp_arsenico | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">(As) Arsenico total:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.smp_plomo_total | ifEmpty: '--']](ppm)
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.smp_interp_plomo | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">(Pb) Plomo total:</div>
+                                </div>
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.smp_cadmio_total | ifEmpty: '--']](ppm)
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.smp_interp_cadmio | ifEmpty: '--' ]]"
+                                              data-position="right center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">(Cd) Cadmio total:</div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="column">
+
+                            <div class="ui small header">
+                                <i class="lab brown icon"></i> Propiedades biológicas
+                            </div>
+
+                            <div class="ui celled mini list">
+
+                                <div class="item">
+                                    <div class="right floated">
+                                        [[one_muestra.pbio_hfm | ifEmpty: '--']]
+                                        <span data-inverted=""
+                                              data-tooltip="[[one_muestra.pbio_interp_hfm | ifEmpty: '--' ]]"
+                                              data-position="left center">
+                                                            <i class="circle info blue icon"></i>
+                                                        </span>
+                                    </div>
+                                    <div class="header">
+                                        <a data-inverted=""
+                                           data-tooltip="Hongos Formadores de Micorrizas: (esporas/g)"
+                                           data-position="bottom center">HFM:</a>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="actions">
+
+            <!--<button class="ui orange button">Ver mas</button>-->
+            <div class="ui red deny button icon">
+                Cerrar <i class="close icon"></i>
+            </div>
+        </div>
+    </div>
+    <!--*******************************************************************************************************-->
+
+
+</div>
+
+
+{% endblock contenido %}
+
+
+{% block script %}
+<!-- LEAFLET -->
+<script type="text/javascript" src="{% static 'bower_components/leaflet/dist/leaflet.js' %}"></script>
+<script type="text/javascript"
+        src="{% static 'bower_components/leaflet.markercluster/dist/leaflet.markercluster-src.js' %}"></script>
+<script type="text/javascript"
+        src="{% static 'bower_components/leaflet.locatecontrol/dist/L.Control.Locate.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/Leaflet.label/dist/leaflet.label.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/leaflet-sidebar/src/L.Control.Sidebar.js' %}"></script>
+<script type="text/javascript"
+        src="{% static 'bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/leaflet.fullscreen/Control.FullScreen.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/Leaflet.EasyButton/src/easy-button.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/Leaflet_draw/leaflet-draw/dist/leaflet.draw-src.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/Leaflet_draw/leaflet.measurecontrol.min.js' %}"></script>
+<script type="text/javascript"
+        src="{% static 'plugins/Leaflet_StyledLayerControl/src/styledLayerControl.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/leaflet-search/src/leaflet-search.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/leaflet-loader/leaflet-loader.js' %}"></script>
+<script type="text/javascript"
+        src="{% static 'bower_components/leaflet-panel-layers/dist/leaflet-panel-layers.src.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/leaflet-providers/leaflet-providers.js' %}"></script>
+<script type="text/javascript"
+        src="{% static 'bower_components/leaflet-minimap/dist/Control.MiniMap.min.js' %}"></script>
+
+
+<!-- ESCRIP NECESARIOS PARA CARGAR ARCHIVOS GPX -->
+<script type="text/javascript" src="https://unpkg.com/togeojson@0.14.2"></script>
+<script type="text/javascript" src="https://unpkg.com/leaflet-filelayer@0.6.0"></script>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9J32zGDDez4Hx97ViE-HuKZT-bOm09Rw"></script>
+<script src="{% static 'plugins/leaflet_google/layer/tile/Google.js' %}"></script>
+
+<!-- ANGULARJS -->
+<script type="text/javascript" src="{% static 'angularjs/services/EstacionesService.js' %}"></script>
+<script type="text/javascript" src="{% static 'angularjs/services/SueloService.js' %}"></script>
+<script type="text/javascript" src="{% static 'angularjs/controller/MapaInteractivoController.js' %}"></script>
+
+<script>
+$(document).ready(function(e) {
+
+	$('#tab_satisfacao .item').tab();
+
+	$('.menu .item').tab();
+
+	$('#accordeon_suelo').accordion();
+
+});
+
+
+
+
+
+</script>
+{% endblock script %}
