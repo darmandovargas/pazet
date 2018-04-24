@@ -36,32 +36,34 @@ app.controller('MapaInteractivoController', ['$scope','$q','Estaciones','Suelo',
         //var map = L.map('map');
         //map.setView([36.3894816, 139.0634281], 14);
 
-        map.on("viewreset moveend", update);
-
-        var mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
-
-        L.tileLayer(
-            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-                attribution: 'Map data &copy; ' + mapLink,
-                maxZoom: 18
-            }
-        ).addTo(map);
-
-
-        // オーバーレイレイヤ追加
-        map._initPathRoot();
-        var svg = d3.select("#map").select("svg");
-        var g = svg.append("g").attr("class", "leaflet-zoom-hide");
-
-
-        //ボロノイジェネレーター
-        var voronoi = d3.geom.voronoi()
-            .x(function(d) { return d.x; })
-            .y(function(d) { return d.y; });
-
-
         if($location.absUrl().split('/')[5]=="voronoi"){
+
+            map.on("viewreset moveend", update);
+
+            var mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+
+            L.tileLayer(
+                'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
+                    attribution: 'Map data &copy; ' + mapLink,
+                    maxZoom: 18
+                }
+            ).addTo(map);
+
+
+            // オーバーレイレイヤ追加
+            map._initPathRoot();
+            var svg = d3.select("#map").select("svg");
+            var g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+
+            //ボロノイジェネレーター
+            var voronoi = d3.geom.voronoi()
+                .x(function(d) { return d.x; })
+                .y(function(d) { return d.y; });
+
+
+
             update();
             map.setView({lat: 8.23593, lng: -72.469341}, 11, {animation: true});
         }
