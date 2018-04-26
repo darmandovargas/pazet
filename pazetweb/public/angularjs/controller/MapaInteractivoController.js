@@ -369,6 +369,21 @@ app.controller('MapaInteractivoController', ['$scope','$q','Estaciones','Suelo',
                     ]
                 },
                 {
+                    group: "Interpolacion",
+                    collapsed: true,
+                    layers: [
+                        {
+                            name: 'Catalogo perfiles (Suelo)',
+                            icon: '<i class="braille icon brown"></i>',
+                            layer: catalogo_perfiles
+                        },{
+                            name: 'Catalogo muestras (Suelo)',
+                            icon: '<i class="braille icon brown"></i>',
+                            layer: catalogo_muestras
+                        }
+                    ]
+                },                
+                {
                     group: "Satelites",
                     collapsed: false,
                     layers: [

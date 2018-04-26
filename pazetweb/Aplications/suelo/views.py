@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import connection
