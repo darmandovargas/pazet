@@ -13,3 +13,11 @@ virtualenv/
 pazetweb/upload_clima_diario\.log
 
 pazetweb/*\.log
+
+pazetweb/aquacrop/temperature\.TMP
+
+pazetweb/aquacrop/precipitation\.PLU
+
+pazetweb/aquacrop/media_anual_atmosferica\.CO2
+
+pazetweb/aquacrop/evapotranspiration\.ETo
