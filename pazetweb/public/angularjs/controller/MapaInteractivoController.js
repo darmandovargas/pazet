@@ -24,7 +24,7 @@ app.controller('MapaInteractivoController', ['$scope','$q','Estaciones','Suelo',
 
         var pointdata = geojson.features;
 
-        //leaflet初期設定
+        //Configuración inicial del prospecto
         var map = L.map('map',{
             zoom: 10,
             crs: L.CRS.EPSG4326,
@@ -36,42 +36,42 @@ app.controller('MapaInteractivoController', ['$scope','$q','Estaciones','Suelo',
         //var map = L.map('map');
         //map.setView([36.3894816, 139.0634281], 14);
 
-        map.on("viewreset moveend", update);
-
-        var mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
-
-        L.tileLayer(
-            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-                attribution: 'Map data &copy; ' + mapLink,
-                maxZoom: 18
-            }
-        ).addTo(map);
-
-
-        // オーバーレイレイヤ追加
-        map._initPathRoot();
-        var svg = d3.select("#map").select("svg");
-        var g = svg.append("g").attr("class", "leaflet-zoom-hide");
-
-
-        //ボロノイジェネレーター
-        var voronoi = d3.geom.voronoi()
-            .x(function(d) { return d.x; })
-            .y(function(d) { return d.y; });
-
-
         if($location.absUrl().split('/')[5]=="voronoi"){
+
+            map.on("viewreset moveend", update);
+
+            var mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+
+            L.tileLayer(
+                'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
+                    attribution: 'Map data &copy; ' + mapLink,
+                    maxZoom: 18
+                }
+            ).addTo(map);
+
+
+            // Agregar capa de superposición
+            map._initPathRoot();
+            var svg = d3.select("#map").select("svg");
+            var g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+
+            //Generador Voronoi
+            var voronoi = d3.geom.voronoi()
+                .x(function(d) { return d.x; })
+                .y(function(d) { return d.y; });
+
             update();
             map.setView({lat: 8.23593, lng: -72.469341}, 11, {animation: true});
         }
 
         function update() {
 
-            //ピクセルポジション情報保存用
+            //Para almacenar información de posición de píxel
             var positions = [];
 
-            //位置情報→ピクセルポジション変換
+            //Información de posición → transformación de posición de píxel
             pointdata.forEach(function(d) {
                 var latlng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
                 positions.push({
@@ -80,10 +80,9 @@ app.controller('MapaInteractivoController', ['$scope','$q','Estaciones','Suelo',
                 });
             });
 
-
-            //前サークルを削除
+            //Eliminar círculo anterior
             d3.selectAll('.AEDpoint').remove();
-            //サークル要素を追加
+            //Agregar elemento de círculo
             var circle = g.selectAll("circle")
                 .data(positions)
                 .enter()
@@ -96,13 +95,13 @@ app.controller('MapaInteractivoController', ['$scope','$q','Estaciones','Suelo',
                     fill:"brown"
                 });
 
-            //ボロノイ変換関数
+            //Función de conversión de Voronoi
             var polygons = voronoi(positions);
             polygons.forEach(function(v) { v.cell = v; });
 
-            //前ボロノイPathを削除
+            //Eliminar el camino de Voronoi anterior
             svg.selectAll(".volonoi").remove();
-            //path要素を追加
+            //Agregar elemento a la ruta
             svg.selectAll("path")
                 .data(polygons)
                 .enter()
@@ -118,14 +117,9 @@ app.controller('MapaInteractivoController', ['$scope','$q','Estaciones','Suelo',
                 });
             //$('.volonoi').toggle();
             //$('.AEDpoint').toggle();
-
         }
 
-
-
-
-         //SE CENTRA LA ESTACION EN EL MAPA
-
+        //SE CENTRA LA ESTACION EN EL MAPA
         L.Control.zoomHome({position: 'topleft'}).addTo(map); //BOTON HOME DE RESET
         L.control.scale({metric:true}).addTo(map); //PARA MOSTRAR UNA ESCALA EN EL MAPA
         L.Control.measureControl({title:'Medir distancias'}).addTo(map); //FUNCIONA COMO REGLA PARA MEDIR DISTANCIAS
