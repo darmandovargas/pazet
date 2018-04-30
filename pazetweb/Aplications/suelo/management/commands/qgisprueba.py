@@ -13,7 +13,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         # ---------------------------------------------------------------------------------------
-        QgsApplication.setPrefixPath("/usr/share/qgis", True)
+        #QgsApplication.setPrefixPath("/usr/share/qgis", True)
+        QgsApplication.setPrefixPath("/Applications/QGIS.app/Contents/MacOS", True)
         qgs = QgsApplication([], True)
         qgs.initQgis()
         #---------------------------------------------------------------------------------------
