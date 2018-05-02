@@ -21,3 +21,5 @@ pazetweb/aquacrop/precipitation\.PLU
 pazetweb/aquacrop/media_anual_atmosferica\.CO2
 
 pazetweb/aquacrop/evapotranspiration\.ETo
+
+pazetweb/aquacrop/irrigacion\.IRR
